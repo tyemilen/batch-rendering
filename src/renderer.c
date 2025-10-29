@@ -5,53 +5,79 @@
 
 #include "maler.h"
 #include "shader.h"
+#include "texture.h"
 
-void renderer_draw_layer(Renderer *r, MalerLayer *layer, int type) {
-	int element_count =
-		maler_layer_update(layer, type);
+void renderer_draw_container(Renderer *r, MalerContainer *container, int type) {
+	size_t element_count = maler_container_update(container, type);
 	if (element_count == 0) return;
+
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	GLuint shader = shader_get(r->shaders, type);
-
 	glUseProgram(shader);
 
-	glUniform2f(glGetUniformLocation(shader, "uLayerOffset"), layer->offset_x,
-				layer->offset_y);
+	glUniform2f(glGetUniformLocation(shader, "uContainerOffset"),
+				container->offset_x, container->offset_y);
 	glUniform2f(glGetUniformLocation(shader, "uWindowSize"),
 				(float)r->win_width, (float)r->win_height);
 
 	glBindVertexArray(r->vao);
-	glBindBuffer(GL_ARRAY_BUFFER, layer->quad_VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, container->quad_VBO);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 	glEnableVertexAttribArray(0);
 
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, layer->instance_SSBO);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, layer->data_SSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, container->instance_SSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, container->data_SSBO);
 
-	glDrawArraysInstanced(GL_TRIANGLES, 0, 6, element_count);
+	size_t start = 0;
+	while (start < element_count) {
+		MalerElement *first = container->elements[start];
+		Texture *texture = first->texture;
+
+		size_t end = start + 1;
+		while (end < element_count &&
+			   container->elements[end]->texture == texture) {
+			end++;
+		}
+
+		if (texture) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture->data);
+			glUniform1i(glGetUniformLocation(shader, "uTexture"), 0);
+			glUniform1i(glGetUniformLocation(shader, "uUseTexture"), GL_TRUE);
+		} else {
+			glUniform1i(glGetUniformLocation(shader, "uUseTexture"), GL_FALSE);
+		}
+
+		glUniform1ui(glGetUniformLocation(shader, "uInstanceOffset"), start);
+
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, end - start);
+
+		start = end;
+	}
 }
 
-MalerLayer *renderer_add_layer(Renderer *r, int id) {
-	r->layers = realloc(r->layers, (r->layer_count + 1) * sizeof(MalerLayer *));
-	r->layers[r->layer_count] = malloc(sizeof(MalerLayer));
-	MalerLayer *layer = r->layers[r->layer_count];
-	maler_layer_init(layer, id);
-	r->layer_count++;
+MalerContainer *renderer_add_container(Renderer *r, int id) {
+	r->containers = realloc(r->containers, (r->container_count + 1) *
+											   sizeof(MalerContainer *));
+	r->containers[r->container_count] = malloc(sizeof(MalerContainer));
+	MalerContainer *container = r->containers[r->container_count];
+	maler_container_init(container, id);
+	r->container_count++;
 
-	return layer;
+	return container;
 }
 
-MalerLayer *renderer_get_layer(Renderer *r, int id) {
-	for (int i = 0; i < r->layer_count; ++i) {
-		if (r->layers[i]->id == id) return r->layers[i];
+MalerContainer *renderer_get_container(Renderer *r, int id) {
+	for (int i = 0; i < r->container_count; ++i) {
+		if (r->containers[i]->id == id) return r->containers[i];
 	}
 
 	return 0;
 }
 
 void renderer_init(Renderer *r, int w, int h) {
-	r->layers = NULL;
-	r->layer_count = 0;
+	r->containers = NULL;
+	r->container_count = 0;
 	r->shaders = shader_create_registry(64);
 
 	glGenVertexArrays(1, &r->vao);
@@ -64,9 +90,9 @@ void renderer_init(Renderer *r, int w, int h) {
 	glEnable(GL_MULTISAMPLE);
 }
 
-static int compare_layers(const void *a, const void *b) {
-	MalerLayer *la = *(MalerLayer **)a;
-	MalerLayer *lb = *(MalerLayer **)b;
+static int compare_containers(const void *a, const void *b) {
+	MalerContainer *la = *(MalerContainer **)a;
+	MalerContainer *lb = *(MalerContainer **)b;
 	return la->id - lb->id;
 }
 
@@ -77,12 +103,13 @@ static int compare_ints(const void *a, const void *b) {
 }
 
 void renderer_flush(Renderer *r) {
-	if (r->layer_count == 0) return;
+	if (r->container_count == 0) return;
 
-	qsort(r->layers, r->layer_count, sizeof(MalerLayer *), compare_layers);
+	qsort(r->containers, r->container_count, sizeof(MalerContainer *),
+		  compare_containers);
 
-	for (int i = 0; i < r->layer_count; ++i) {
-		MalerLayer *layer = r->layers[i];
+	for (int i = 0; i < r->container_count; ++i) {
+		MalerContainer *container = r->containers[i];
 		size_t key_count;
 		int *keys = shader_registry_get_keys(r->shaders, &key_count);
 
@@ -92,15 +119,15 @@ void renderer_flush(Renderer *r) {
 			int type = keys[j];
 
 			int has_type = 0;
-			for (size_t k = 0; k < layer->element_count; k++) {
-				if (layer->elements[k]->type == type) {
+			for (size_t k = 0; k < container->element_count; k++) {
+				if (container->elements[k]->type == type) {
 					has_type = 1;
 					break;
 				}
 			}
 			if (!has_type) continue;
 
-			renderer_draw_layer(r, layer, type);
+			renderer_draw_container(r, container, type);
 		}
 
 		free(keys);

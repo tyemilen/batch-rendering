@@ -34,7 +34,6 @@ int nsdl_init(NSDLWindow *window) {
 #ifdef DEBUG
 		LOG_ERROR("nsdl_init(): %s", glewGetErrorString(gerr));
 #endif
-
 		return 0;
 	};
 	glViewport(0, 0, 800, 600);

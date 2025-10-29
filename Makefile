@@ -5,7 +5,7 @@ CFLAGS = -Wall -Wextra -Wpedantic -Wshadow -Wpointer-arith \
 SOURCES = $(wildcard ./src/*.c) $(wildcard ./src/**/*.c)
 INCLUDE = -I./include
 LIBS = -lOpenGL32 -lglew32
-LIB_SDL = $(shell pkg-config --cflags --libs sdl3)
+LIB_SDL = $(shell pkg-config --cflags --libs sdl3) -lSDL3_image
 
 OBJECTS = $(SOURCES:.c=.o)
 

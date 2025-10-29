@@ -1,38 +1,39 @@
 #include "maler.h"
 
-#ifdef DEBUG
-#include "log.h"
-#endif
-
 #include <GL/glew.h>
 #include <stddef.h>
 #include <stdlib.h>
 
+#ifdef DEBUG
+#include "log.h"
+#endif
+#include "texture.h"
+
 const float quad_vertices[12] = {0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1};
 
-void maler_layer_init(MalerLayer *layer, int id) {
-	layer->id = id;
-	layer->elements = 0;
-	layer->element_count = 0;
-	layer->offset_x = 0;
-	layer->offset_y = 0;
+void maler_container_init(MalerContainer *container, int id) {
+	container->id = id;
+	container->elements = 0;
+	container->element_count = 0;
+	container->offset_x = 0;
+	container->offset_y = 0;
 
-	glGenBuffers(1, &layer->quad_VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, layer->quad_VBO);
+	glGenBuffers(1, &container->quad_VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, container->quad_VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quad_vertices), quad_vertices,
 				 GL_STATIC_DRAW);
 
-	glGenBuffers(1, &layer->instance_SSBO);
-	glGenBuffers(1, &layer->data_SSBO);
+	glGenBuffers(1, &container->instance_SSBO);
+	glGenBuffers(1, &container->data_SSBO);
 }
 
-int maler_layer_update(MalerLayer *layer, int type) {
+size_t maler_container_update(MalerContainer *container, int type) {
 	size_t type_count = 0;
 	size_t total_floats = 0;
-	for (size_t i = 0; i < layer->element_count; i++) {
-		if (layer->elements[i]->type != type) continue;
+	for (size_t i = 0; i < container->element_count; i++) {
+		if (container->elements[i]->type != type) continue;
 		type_count++;
-		total_floats += layer->elements[i]->data_count;
+		total_floats += container->elements[i]->data_count;
 	}
 
 	if (type_count == 0) return 0;
@@ -42,10 +43,10 @@ int maler_layer_update(MalerLayer *layer, int type) {
 
 	size_t offset = 0;
 	size_t idx = 0;
-	for (size_t i = 0; i < layer->element_count; i++) {
-		if (layer->elements[i]->type != type) continue;
+	for (size_t i = 0; i < container->element_count; i++) {
+		if (container->elements[i]->type != type) continue;
 
-		MalerElement *el = layer->elements[i];
+		MalerElement *el = container->elements[i];
 
 		instances[idx].box[0] = el->box.x;
 		instances[idx].box[1] = el->box.y;
@@ -62,11 +63,11 @@ int maler_layer_update(MalerLayer *layer, int type) {
 		idx++;
 	}
 
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, layer->instance_SSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, container->instance_SSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, type_count * sizeof(InstanceData),
 				 instances, GL_DYNAMIC_DRAW);
 
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, layer->data_SSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, container->data_SSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, total_floats * sizeof(float),
 				 data_buffer, GL_DYNAMIC_DRAW);
 
@@ -76,12 +77,11 @@ int maler_layer_update(MalerLayer *layer, int type) {
 	return type_count;
 }
 
-MalerElement *maler_create(MalerBox box, void *data, int data_count, int type,
-						   MalerLayer *layer) {
+MalerElement *maler_create(MalerBox box, void *data, int data_count, int type, Texture *texture, MalerContainer *container) {
 #ifdef DEBUG
 	LOG_INFO("maler_create(): +1");
 #endif
-	layer->elements = realloc(layer->elements, (layer->element_count + 1) *
+	container->elements = realloc(container->elements, (container->element_count + 1) *
 												   sizeof(MalerElement *));
 	MalerElement *element = malloc(sizeof(MalerElement));
 
@@ -89,10 +89,11 @@ MalerElement *maler_create(MalerBox box, void *data, int data_count, int type,
 	element->data_count = data_count;
 	element->type = type;
 	element->box = box;
-	element->layer = layer;
+	element->texture = texture;
+	element->container = container;
 
-	layer->elements[layer->element_count] = element;
-	layer->element_count += 1;
+	container->elements[container->element_count] = element;
+	container->element_count += 1;
 
 	return element;
 }

@@ -5,6 +5,8 @@
 #include <limits.h>
 #include <stddef.h>
 
+#include "texture.h"
+
 typedef struct MalerBox {
 	int x, y, width, height;
 } MalerBox;
@@ -14,11 +16,13 @@ typedef struct {
 	void *data;
 	int data_count;
 
+	Texture *texture;
+
 	MalerBox box;
-	struct MalerLayer *layer;
+	struct MalerContainer *container;
 } MalerElement;
 
-typedef struct MalerLayer {
+typedef struct MalerContainer {
 	int id;
 
 	MalerElement **elements;
@@ -30,7 +34,7 @@ typedef struct MalerLayer {
 	GLuint data_SSBO;
 
 	float offset_x, offset_y;
-} MalerLayer;
+} MalerContainer;
 
 typedef struct {
 	float box[4];
@@ -39,11 +43,10 @@ typedef struct {
 	unsigned int padding[2]; // std430 thing ig
 } InstanceData;
 
-void maler_layer_init(MalerLayer *layer, int id);
-void maler_layer_ensure_capacity(MalerLayer *layer);
-int maler_layer_update(MalerLayer *layer, int type);
+void maler_container_init(MalerContainer *container, int id);
+void maler_container_ensure_capacity(MalerContainer *container);
+size_t maler_container_update(MalerContainer *container, int type);
 
-MalerElement *maler_create(MalerBox box, void *data, int data_count, int type,
-						   MalerLayer *layer);
+MalerElement *maler_create(MalerBox box, void *data, int data_count, int type, Texture *texture, MalerContainer *container);
 
 #endif // MALER_H_
