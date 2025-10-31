@@ -12,19 +12,20 @@ int main(void) {
 
 	float rect_data[5] = {1.0f, 0.6f, 0.6f, 1.0f, 0.0f};
 	float rect_data_2[5] = {1.0f, 0.8f, 0.6f, 1.0f, 10.0f};
-	float floor_data[5] = {0.8f, 0.7f, 1.0f, 1.0f, 0.0f};
+	float floor_data[5] = {0.8f, 0.7f, 0.4f, 0.5f, 0.0f};
 
 	bg_register_shader(SHADER_RECT, (char *)fragment_shader_rect);
 
 	bg_load_texture(0xCA7, "cats.jpg");
 	bg_load_texture(0xF906, "frog.png");
 
-	bg_create((MalerBox){0, 0, 800, 600}, NULL, 0, SHADER_RECT, bg_get_texture(0xF906), 0);
+	float bg_data[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+	bg_create((MalerBox){0, 0, 800, 600}, (void*)bg_data, 4, SHADER_RECT, bg_get_texture(0xF906), 0);
 	MalerElement *rect =
 		bg_create((MalerBox){0, 0, 120, 120}, (void *)rect_data, 5, SHADER_RECT, NULL, 1);
 	bg_create((MalerBox){29, 30, 60, 60}, (void *)rect_data_2, 5, SHADER_RECT, bg_get_texture(0xCA7), 1);
 	MalerElement *floor =
-		bg_create((MalerBox){0, 540, 800, 120}, (void *)floor_data, 5, SHADER_RECT, bg_get_texture(0xCA7), 2);
+		bg_create((MalerBox){0, 540, 800, 120}, (void *)floor_data, 5, SHADER_RECT, NULL, 2);
 
 	float vel_x = 0.0f;
 	float vel_y = 0.0f;

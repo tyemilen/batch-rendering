@@ -55,7 +55,7 @@ void main() {
 	
 	if (uUseTexture) {
 		vec4 texColor = texture(uTexture, uv);
-		FragColor = texColor * a;
+		FragColor = vec4(texColor.rgb, texColor.a * color.a);
 	} else {
 		FragColor = color;
 	}
