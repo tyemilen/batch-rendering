@@ -3,62 +3,57 @@
 
 #define SHADER_RECT 0x1
 
-const char *fragment_shader_rect = R"glsl(
-#version 430 core
+const char *vertex_shader_rect = R"glsl(
+#version 330
 
-flat in uint vInstanceID;
-in vec2 vLocalPos;
-in vec2 uSize;
-out vec4 FragColor;
+layout(location = 0) in vec2 aVertex;
+layout(location = 1) in vec4 aBox;
+layout(location = 2) in vec4 aColor;
 
-struct InstanceData {
-	vec4 box;
-	uint data_offset;
-	uint data_count;
-	uint padding0;
-	uint padding1;
-};
+uniform vec2 uWindowSize;
 
-layout(std430, binding = 0) buffer Instances { InstanceData instances[]; };
-layout(std430, binding = 1) buffer ElementData { float data[]; };
-
-uniform sampler2D uTexture;
-uniform bool uUseTexture;
-
-float sdbox(vec2 p, vec2 h, vec2 r) {
-	r = min(r, h);
-	vec2 q = abs(p) - h + r;
-	return length(max(q, 0.0)) - min(r.x, r.y);
-}
+out vec2 vLocalPos;
+out vec4 vColor;
+out float vRadius;
+out vec2 vSize;
 
 void main() {
-	InstanceData inst = instances[vInstanceID];
-	float a = 1.0;
-
-	if (data[inst.data_offset + 4] > 0.0) {
-		vec2 radius = vec2(data[inst.data_offset + 4]);
-		vec2 h = 0.5 * uSize;
-		vec2 p = vLocalPos;
-		float d = sdbox(p, h, radius);
-		float px = length(vec2(dFdx(d), dFdy(d)));
-		a = 1.0 - smoothstep(-0.5, px, d);
-	}
-
-	vec4 color = vec4(
-		data[inst.data_offset + 0],
-		data[inst.data_offset + 1],
-		data[inst.data_offset + 2],
-		data[inst.data_offset + 3] * a
-	);
-
-	vec2 uv = (vLocalPos / uSize) + 0.5;
+	vec2 pos = aBox.xy + aVertex * aBox.zw;
+	vec2 ndc = vec2(2.0 * pos.x / uWindowSize.x - 1.0, 1.0 - 2.0 * pos.y / uWindowSize.y);
 	
+	gl_Position = vec4(ndc, 0.0, 1.0);
+
+	vLocalPos = aVertex * aBox.zw - 0.5 * aBox.zw;
+	vColor = aColor;
+	vSize = aBox.zw;
+}
+
+)glsl";
+
+const char *fragment_shader_rect = R"glsl(
+#version 330
+
+in vec2 vLocalPos;
+in vec4 vColor;
+in vec2 vSize;
+
+out vec4 FragColor;
+
+uniform bool uUseTexture;
+uniform sampler2D uTexture;
+
+void main() {
+	vec2 h = 0.5 * vSize;
+
+	vec4 color = vColor;
 	if (uUseTexture) {
+		vec2 uv = (vLocalPos / h + 1.0) * 0.5;
 		vec4 texColor = texture(uTexture, uv);
-		FragColor = vec4(texColor.rgb, texColor.a * color.a);
-	} else {
-		FragColor = color;
+		color.rgb = texColor.rgb;
+		color.a = color.a * texColor.a;
 	}
+
+	FragColor = color;
 }
 
 )glsl";

@@ -6,13 +6,12 @@
 
 void bg_init(char* title, int width, int height);
 
-void bg_register_shader(int key, char* src);
-MalerElement *bg_create(MalerBox box, void *data, int data_count, int type, Texture *texture, int container_id);
+void bg_register_shader(int key, const char *vertex, const char* frag);
+
+MalerElement *bg_create(void *data, int data_count, int type, Texture *texture);
 
 int bg_load_texture(int id, const char* filename);
 Texture *bg_get_texture(int id);
-
-MalerContainer *bg_get_container(int id);
 
 void bg_run(void);
 int bg_should_close(void);

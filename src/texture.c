@@ -1,19 +1,23 @@
 #include "texture.h"
-#include "log.h"
 
-#include <SDL3/SDL_pixels.h>
 #include <stdlib.h>
+
+#include "core.h"
+
+#ifdef DEBUG
+#include "log.h"
+#endif
 
 void texture_manager_init(TextureManager *mgr) {
 	mgr->textures = NULL;
 	mgr->count = 0;
 	mgr->capacity = 0;
 }
-int texture_manager_add(TextureManager *mgr, int id, int width, int height,
-						const unsigned char *pixels, SDL_PixelFormat format) {
+
+int texture_manager_add(TextureManager *mgr, int id, Image *img) {
 	if (mgr->count >= mgr->capacity) {
 		size_t new_cap = mgr->capacity ? mgr->capacity * 2 : 16;
-		mgr->textures = realloc(mgr->textures, new_cap * sizeof(Texture*));
+		mgr->textures = realloc(mgr->textures, new_cap * sizeof(Texture *));
 		mgr->capacity = new_cap;
 	}
 
@@ -21,25 +25,19 @@ int texture_manager_add(TextureManager *mgr, int id, int width, int height,
 
 	texture->id = id;
 	texture->data = 0;
+	texture->width = img->width;
+	texture->height = img->height;
 
 	glGenTextures(1, &texture->data);
 
 	glBindTexture(GL_TEXTURE_2D, texture->data);
 
-	GLenum gl_format;
-	switch (format) {
-		case SDL_PIXELFORMAT_RGBA32: gl_format = GL_RGBA; break;
-		case SDL_PIXELFORMAT_ARGB32: gl_format = GL_BGRA; break;
-		case SDL_PIXELFORMAT_RGB24:  gl_format = GL_RGB;  break;
-		case SDL_PIXELFORMAT_BGR24:  gl_format = GL_BGR;  break;
-		default:
-			LOG_ERROR("Unsupported SDL pixel format");
-			return -1;
-	}
-	GLenum internalFormat = (gl_format == GL_RGB || gl_format == GL_BGR) ? GL_RGB8 : GL_RGBA8;
+	GLenum internalFormat =
+		(img->format == GL_RGB || img->format == GL_BGR) ? GL_RGB8 : GL_RGBA8;
 
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0,
-				gl_format, GL_UNSIGNED_BYTE, pixels);
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, texture->width,
+				 texture->height, 0, img->format, GL_UNSIGNED_BYTE,
+				 img->pixels);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

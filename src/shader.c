@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "core.h"
+
 #ifdef DEBUG
 #include "log.h"
 #endif
@@ -35,7 +37,8 @@ void shader_register(ShaderRegistry *registry, int key, GLuint prog) {
 
 		for (size_t i = 0; i < old_size; ++i) {
 			if (old_entries[i].occupied) {
-				shader_register(registry, old_entries[i].key, old_entries[i].value);
+				shader_register(registry, old_entries[i].key,
+								old_entries[i].value);
 			}
 		}
 
@@ -55,7 +58,7 @@ void shader_register(ShaderRegistry *registry, int key, GLuint prog) {
 	++registry->count;
 }
 
-int* shader_registry_get_keys(ShaderRegistry *registry, size_t *out_count) {
+int *shader_registry_get_keys(ShaderRegistry *registry, size_t *out_count) {
 	*out_count = registry->count;
 	if (registry->count == 0) return NULL;
 
