@@ -25,6 +25,7 @@ typedef struct MalerContainer {
 	int id;
 	int shader_type;
 	int texture_id;
+	int shader_bound;
 
 	GLuint shader;
 
@@ -34,8 +35,6 @@ typedef struct MalerContainer {
 	GLuint quad_VBO;
 	GLuint instance_VBO;
 	GLuint vao;
-
-	float offset_x, offset_y;
 } MalerContainer;
 
 void maler_container_init(MalerContainer *container, int id, int shader_type);

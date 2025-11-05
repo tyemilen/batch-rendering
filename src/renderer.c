@@ -26,7 +26,6 @@ void renderer_draw_container(Renderer *r, MalerContainer *container) {
 		uUseTextureLoc = glGetUniformLocation(container->shader, "uUseTexture");
 	}
 	glUseProgram(container->shader);
-	glUniform2f(uContainerOffsetLoc, container->offset_x, container->offset_y);
 	glUniform2f(uWindowSizeLoc, r->win_width, r->win_height);
 	glBindVertexArray(container->vao);
 
@@ -64,10 +63,15 @@ MalerContainer *renderer_add_container(Renderer *r, int id, int shader_type,
 
 	container->texture_id = texture_id;
 	container->id = r->container_count;
-	container->shader = shader_get(r->shaders, shader_type);
+
+	ShaderEntry shader = shader_get(r->shaders, shader_type);
+	container->shader = shader.prog;
 
 	r->container_count++;
 
+	shader.bind(container);
+
+	LOG_INFO("+1 CONTAINER: %d, %d", shader_type, texture_id);
 	return container;
 }
 

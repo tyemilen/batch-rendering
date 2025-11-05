@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "core.h"
+#include "maler.h"
 
 #ifdef DEBUG
 #include "log.h"
@@ -26,7 +27,7 @@ ShaderRegistry *shader_create_registry(size_t size) {
 	return registry;
 }
 
-void shader_register(ShaderRegistry *registry, int key, GLuint prog) {
+void shader_register(ShaderRegistry *registry, int key, GLuint prog, void (*bind)(MalerContainer *)) {
 	if (registry->count + 1 >= registry->size) {
 		ShaderEntry *old_entries = registry->entries;
 		size_t old_size = registry->size;
@@ -38,7 +39,7 @@ void shader_register(ShaderRegistry *registry, int key, GLuint prog) {
 		for (size_t i = 0; i < old_size; ++i) {
 			if (old_entries[i].occupied) {
 				shader_register(registry, old_entries[i].key,
-								old_entries[i].value);
+								old_entries[i].prog, old_entries[i].bind);
 			}
 		}
 
@@ -53,7 +54,8 @@ void shader_register(ShaderRegistry *registry, int key, GLuint prog) {
 	}
 
 	registry->entries[idx].key = key;
-	registry->entries[idx].value = prog;
+	registry->entries[idx].prog = prog;
+	registry->entries[idx].bind = bind;
 	registry->entries[idx].occupied = 1;
 	++registry->count;
 }
@@ -74,16 +76,16 @@ int *shader_registry_get_keys(ShaderRegistry *registry, size_t *out_count) {
 	return keys;
 }
 
-GLuint shader_get(ShaderRegistry *registry, int key) {
+ShaderEntry shader_get(ShaderRegistry *registry, int key) {
 	uint32_t idx = hash((uint32_t)key) & (registry->size - 1);
 
 	while (registry->entries[idx].occupied) {
 		if (registry->entries[idx].key == key)
-			return registry->entries[idx].value;
+			return registry->entries[idx];
 		idx = (idx + 1) & (registry->size - 1);
 	}
 
-	return 0;
+	return (ShaderEntry){0};
 }
 
 void shader_registry_destroy(ShaderRegistry *registry) {

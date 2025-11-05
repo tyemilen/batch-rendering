@@ -39,8 +39,8 @@ Texture *bg_get_texture(int id) {
 	return texture_manager_get(&g_texture_manager, id);
 }
 
-void bg_register_shader(int key, const char *vertex, const char *frag) {
-	shader_register(g_renderer.shaders, key, shader_create(vertex, frag));
+void bg_register_shader(int key, GLuint prog, void (*bind)(MalerContainer *)) {
+	shader_register(g_renderer.shaders, key, prog, bind);
 }
 
 MalerElement *bg_create(void *data, int data_count, int type,
