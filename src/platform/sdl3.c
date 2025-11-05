@@ -87,3 +87,7 @@ Image *platform_load_image(const char* filename) {
 
 	return image;
 }
+
+void platform_get_mouse(Mouse *mouse) {
+	SDL_GetMouseState(&mouse->x, &mouse->y);
+}

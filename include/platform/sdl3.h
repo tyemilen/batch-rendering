@@ -11,4 +11,6 @@ void platform_draw(void);
 void platform_poll_event(Event*);
 Image *platform_load_image(const char* filename);
 
+void platform_get_mouse(Mouse *mouse);
+
 #endif // PLATFORM_SDL3_H_

@@ -18,8 +18,8 @@ typedef struct TextureManager {
 } TextureManager;
 
 void texture_manager_init(TextureManager *manager);
-int texture_manager_add(TextureManager *mgr, int id, Image *img);
 
+Texture *texture_manager_add(TextureManager *mgr, int id, Image *img);
 Texture *texture_manager_get(TextureManager *mgr, int id);
 
 #endif // TEXTURE_H_

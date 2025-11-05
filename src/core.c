@@ -107,6 +107,7 @@ void core_init_gl(Window window) {
 
 Window core_create_window(char *title, int width, int height) {
 	Window window = {.title = title, .width = width, .height = height};
+	window.mouse = (Mouse){0};
 
 	platform_init(&window);
 
@@ -122,4 +123,8 @@ int core_poll_event(Event *event) {
 
 Image *core_load_image(const char *filename) {
 	return platform_load_image(filename);
+}
+
+void core_get_mouse(Mouse *mouse) {
+	platform_get_mouse(mouse);
 }

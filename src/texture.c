@@ -4,17 +4,13 @@
 
 #include "core.h"
 
-#ifdef DEBUG
-#include "log.h"
-#endif
-
 void texture_manager_init(TextureManager *mgr) {
 	mgr->textures = NULL;
 	mgr->count = 0;
 	mgr->capacity = 0;
 }
 
-int texture_manager_add(TextureManager *mgr, int id, Image *img) {
+Texture *texture_manager_add(TextureManager *mgr, int id, Image *img) {
 	if (mgr->count >= mgr->capacity) {
 		size_t new_cap = mgr->capacity ? mgr->capacity * 2 : 16;
 		mgr->textures = realloc(mgr->textures, new_cap * sizeof(Texture *));
@@ -47,7 +43,7 @@ int texture_manager_add(TextureManager *mgr, int id, Image *img) {
 	mgr->textures[mgr->count] = texture;
 	mgr->count++;
 
-	return id;
+	return texture;
 }
 
 Texture *texture_manager_get(TextureManager *mgr, int id) {

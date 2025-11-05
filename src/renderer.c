@@ -4,7 +4,6 @@
 #include <stdlib.h>
 
 #include "core.h"
-#include "log.h"
 #include "maler.h"
 #include "shader.h"
 #include "texture.h"
@@ -71,7 +70,6 @@ MalerContainer *renderer_add_container(Renderer *r, int id, int shader_type,
 
 	shader.bind(container);
 
-	LOG_INFO("+1 CONTAINER: %d, %d", shader_type, texture_id);
 	return container;
 }
 

@@ -5,10 +5,6 @@
 #include <string.h>
 
 #include "core.h"
-
-#ifdef DEBUG
-#include "log.h"
-#endif
 #include "texture.h"
 
 const float quad_vertices[12] = {0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1};

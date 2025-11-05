@@ -93,15 +93,22 @@ extern void (*glViewport)(GLint, GLint, GLsizei, GLsizei);
 
 typedef unsigned int PixelFormat;
 
+typedef struct Mouse {
+	float x, y;
+} Mouse;
+
 typedef struct Window {
 	char *title;
 	char *gl_version_str;
 
 	int width, height;
 	int is_open;
+
+	Mouse mouse;
 } Window;
 void core_init_gl(Window window);
 Window core_create_window(char *title, int width, int height);
+void core_get_mouse(Mouse *mouse);
 
 void core_draw(void);
 
@@ -125,4 +132,5 @@ typedef struct Image {
 } Image;
 
 Image *core_load_image(const char *filename);
+
 #endif // CORE_H_
