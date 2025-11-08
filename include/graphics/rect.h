@@ -10,12 +10,12 @@ typedef struct {
 	float color[4];
 } RectInstance;
 
-typedef struct TextObject {
+typedef struct RectObject {
 	float x, y, width, height;
 	Color color;
 
 	RectInstance instance;
-} TextObject;
+} RectObject;
 
 GLuint shader_rect_get(void);
 void shader_rect_bind(MalerContainer *);
