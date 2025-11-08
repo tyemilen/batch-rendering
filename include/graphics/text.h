@@ -12,15 +12,6 @@ typedef struct {
 	float color[4];
 } TextInstance;
 
-typedef struct TextObject {
-	char *text;
-	float x, y;
-
-	Color color;
-
-	TextInstance instance;
-} TextObject;
-
 GLuint shader_text_get(void);
 void shader_text_bind(MalerContainer *);
 

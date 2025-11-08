@@ -94,9 +94,27 @@ extern void (*glViewport)(GLint, GLint, GLsizei, GLsizei);
 
 typedef void *(*GLProcLoader)(const char *name);
 
+typedef struct Frame {
+	int x, y, width, height;
+} Frame;
+
 typedef struct Color {
 	float r, g, b, a;
 } Color;
+
+#define COLOR_RED (Color){255, 0, 0, 1}
+#define COLOR_GREEN (Color){0, 255, 0, 1}
+#define COLOR_BLUE (Color){0, 0, 255, 1}
+#define COLOR_YELLOW (Color){255, 255, 0, 1}
+#define COLOR_CYAN (Color){0, 255, 255, 1}
+#define COLOR_MAGENTA (Color){255, 0, 255, 1}
+#define COLOR_ORANGE (Color){255, 165, 0, 1}
+#define COLOR_PURPLE (Color){128, 0, 128, 1}
+#define COLOR_PINK (Color){255, 192, 203, 1}
+#define COLOR_BROWN (Color){165, 42, 42, 1}
+#define COLOR_GRAY (Color){128, 128, 128, 1}
+#define COLOR_BLACK (Color){0, 0, 0, 1}
+#define COLOR_WHITE (Color){255, 255, 255, 1}
 
 typedef struct Mouse {
 	float x, y;
@@ -115,6 +133,7 @@ typedef struct Window {
 
 	Mouse mouse;
 } Window;
+
 void core_init_gl(Window window);
 Window core_create_window(char *title, int width, int height);
 void core_get_mouse(Mouse *mouse);

@@ -8,6 +8,7 @@
 #include "maler.h"
 #include "shader.h"
 #include "texture.h"
+
 void renderer_draw_container(Renderer *r, MalerContainer *container) {
 	size_t element_count = maler_container_update(container);
 	if (element_count == 0) return;
@@ -111,9 +112,6 @@ static int compare_containers(const void *a, const void *b) {
 }
 
 void renderer_flush(Renderer *r) {
-	glClearColor(0.1, 0.1, 0.1, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	if (r->container_count == 0) return;
 
 	qsort(r->containers, r->container_count, sizeof(MalerContainer *),

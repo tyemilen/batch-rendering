@@ -41,21 +41,24 @@ void maler_container_init(MalerContainer *container, int id, int shader_type) {
 
 size_t maler_container_update(MalerContainer *container) {
 	size_t count = 0;
-	for (size_t i = 0; i < container->element_count; i++)
-		if (container->elements[i]->type == container->shader_type) count++;
+	for (size_t i = 0; i < container->element_count; i++) {
+		if (container->elements[i]->type == container->shader_type && container->elements[i]->visible) count++;
+	}
 
 	if (count == 0) return 0;
 
 	size_t total_size = 0;
-	for (size_t i = 0; i < container->element_count; i++)
-		if (container->elements[i]->type == container->shader_type)
+	for (size_t i = 0; i < container->element_count; i++) {
+		if (container->elements[i]->type == container->shader_type) {
 			total_size += container->elements[i]->instance_size;
+		}
+	}
 
 	char *buffer = malloc(total_size);
 	size_t offset = 0;
 	for (size_t i = 0; i < container->element_count; i++) {
 		MalerElement *el = container->elements[i];
-		if (el->type != container->shader_type && !el->visible) continue;
+		if (el->type != container->shader_type) continue;
 		memcpy(buffer + offset, el->instance, el->instance_size);
 		offset += el->instance_size;
 	}

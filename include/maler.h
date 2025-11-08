@@ -7,11 +7,7 @@
 #include "core.h"
 #include "texture.h"
 
-typedef struct MalerBox {
-	int x, y, width, height;
-} MalerBox;
-
-typedef struct {
+typedef struct MalerElement {
 	int type;
 	int visible;
 

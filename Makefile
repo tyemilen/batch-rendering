@@ -4,8 +4,8 @@ CFLAGS = -Wall -Wextra -Wpedantic -Wshadow -Wpointer-arith \
          -g -O0 -fstack-protector-strong -D_FORTIFY_SOURCE=2 -mconsole
 INCLUDE = -I./include -I./third_party
 LIBS =
-OUTPUT = ./build/batch
-TARGET = batch
+OUTPUT = ./build/libyta
+TARGET = libyta
 
 PLATFORM ?=
 DEBUG ?=
