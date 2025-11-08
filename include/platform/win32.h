@@ -1,5 +1,5 @@
-#ifndef PLATFORM_SDL3_H_
-#define PLATFORM_SDL3_H_
+#ifndef PLATFORM_WIN32_H_
+#define PLATFORM_WIN32_H_
 
 #include "core.h"
 
@@ -13,4 +13,4 @@ void platform_get_mouse(Mouse *mouse);
 
 void *platform_gl_proc(const char *);
 
-#endif // PLATFORM_SDL3_H_
+#endif // PLATFORM_WIN32_H_

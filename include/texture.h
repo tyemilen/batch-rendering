@@ -19,6 +19,8 @@ typedef struct TextureManager {
 
 void texture_manager_init(TextureManager *manager);
 
+Texture *texture_create(int id, Image *img, GLenum own_format);
+
 Texture *texture_manager_add(TextureManager *mgr, int id, Image *img);
 Texture *texture_manager_get(TextureManager *mgr, int id);
 

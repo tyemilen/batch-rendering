@@ -16,6 +16,11 @@ void maler_container_init(MalerContainer *container, int id, int shader_type) {
 	container->shader_type = shader_type;
 	container->shader_bound = 0;
 
+	container->uContainerOffsetLoc = 0;
+	container->uWindowSizeLoc = 0;
+	container->uTextureLoc = 0;
+	container->uUseTextureLoc = 0;
+
 	glGenVertexArrays(1, &container->vao);
 	glGenBuffers(1, &container->quad_VBO);
 	glGenBuffers(1, &container->instance_VBO);
@@ -50,7 +55,7 @@ size_t maler_container_update(MalerContainer *container) {
 	size_t offset = 0;
 	for (size_t i = 0; i < container->element_count; i++) {
 		MalerElement *el = container->elements[i];
-		if (el->type != container->shader_type) continue;
+		if (el->type != container->shader_type && !el->visible) continue;
 		memcpy(buffer + offset, el->instance, el->instance_size);
 		offset += el->instance_size;
 	}
@@ -75,6 +80,7 @@ MalerElement *maler_create(void *instance, int instance_size, int type,
 	element->type = type;
 	element->texture = texture;
 	element->container = container;
+	element->visible = 1;
 
 	container->elements[container->element_count] = element;
 	container->element_count += 1;

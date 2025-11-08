@@ -6,7 +6,7 @@
 #include "maler.h"
 #include "shader.h"
 
-const char *vertex_shader_rect = R"glsl(
+static const char *vertex_shader = R"glsl(
 #version 330
 
 layout(location = 0) in vec2 aVertex;
@@ -32,7 +32,7 @@ void main() {
 }
 )glsl";
 
-const char *fragment_shader_rect = R"glsl(
+static const char *fragment_shader = R"glsl(
 #version 330
 
 in vec2 vLocalPos;
@@ -59,7 +59,7 @@ void main() {
 }
 )glsl";
 
-void shader_rect_bind(MalerContainer* container) {
+void shader_rect_bind(MalerContainer *container) {
 	glBindVertexArray(container->vao);
 	glBindBuffer(GL_ARRAY_BUFFER, container->instance_VBO);
 
@@ -75,5 +75,5 @@ void shader_rect_bind(MalerContainer* container) {
 }
 
 GLuint shader_rect_get(void) {
-	return shader_create(vertex_shader_rect, fragment_shader_rect);
+	return shader_create(vertex_shader, fragment_shader);
 }

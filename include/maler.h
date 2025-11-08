@@ -13,6 +13,7 @@ typedef struct MalerBox {
 
 typedef struct {
 	int type;
+	int visible;
 
 	void *instance;
 	size_t instance_size;
@@ -35,13 +36,18 @@ typedef struct MalerContainer {
 	GLuint quad_VBO;
 	GLuint instance_VBO;
 	GLuint vao;
+
+	GLuint uContainerOffsetLoc;
+	GLuint uWindowSizeLoc;
+	GLuint uTextureLoc;
+	GLuint uUseTextureLoc;
 } MalerContainer;
 
 void maler_container_init(MalerContainer *container, int id, int shader_type);
 void maler_container_ensure_capacity(MalerContainer *container);
 size_t maler_container_update(MalerContainer *container);
 
-MalerElement *maler_create(void *data, int data_count, int type,
+MalerElement *maler_create(void *instance, int instance_size, int type,
 						   Texture *texture, MalerContainer *container);
 
 #endif // MALER_H_

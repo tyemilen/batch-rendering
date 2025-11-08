@@ -35,6 +35,7 @@
 #define GL_LINEAR 0x2601
 #define GL_STATIC_DRAW 0x88E4
 #define GL_DYNAMIC_DRAW 0x88E8
+#define GL_RED 0x1903
 
 typedef long long GLsizeiptr;
 typedef unsigned int GLenum;
@@ -91,10 +92,18 @@ extern void (*glTexParameteri)(GLenum, GLenum, GLint);
 extern void (*glBufferData)(GLenum, GLsizeiptr, const void *, GLenum);
 extern void (*glViewport)(GLint, GLint, GLsizei, GLsizei);
 
-typedef unsigned int PixelFormat;
+typedef void *(*GLProcLoader)(const char *name);
+
+typedef struct Color {
+	float r, g, b, a;
+} Color;
 
 typedef struct Mouse {
 	float x, y;
+
+	struct {
+		int pressed;
+	} left_button, right_button, middle_button;
 } Mouse;
 
 typedef struct Window {

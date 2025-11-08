@@ -1,9 +1,11 @@
 #include "core.h"
 
-// #ifdef PLATFORM_SDL3
+#ifdef PLATFORM_SDL3
 #include "platform/sdl3.h"
-#include <SDL3/SDL_video.h>
-// #endif
+#endif
+#ifdef PLATFORM_WIN32
+#include "platform/win32.h"
+#endif
 
 GLuint (*glCreateShader)(GLenum);
 void (*glShaderSource)(GLuint, GLsizei, const char **, const GLint *);
@@ -46,8 +48,6 @@ void (*glTexImage2D)(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum,
 void (*glTexParameteri)(GLenum, GLenum, GLint);
 void (*glBufferData)(GLenum, GLsizeiptr, const void *, GLenum);
 void (*glViewport)(GLint, GLint, GLsizei, GLsizei);
-
-typedef void *(*GLProcLoader)(const char *name);
 
 void core_load_gl(GLProcLoader proc) {
 	glCreateShader = (GLuint (*)(GLenum))proc("glCreateShader");
@@ -99,7 +99,7 @@ void core_load_gl(GLProcLoader proc) {
 }
 
 void core_init_gl(Window window) {
-	core_load_gl((GLProcLoader)SDL_GL_GetProcAddress);
+	core_load_gl((GLProcLoader)platform_gl_proc);
 	glViewport(0, 0, window.width, window.height);
 	glClearColor(0.0, 0.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -111,6 +111,7 @@ Window core_create_window(char *title, int width, int height) {
 
 	platform_init(&window);
 
+	core_get_mouse(&window.mouse);
 	return window;
 }
 
@@ -125,6 +126,4 @@ Image *core_load_image(const char *filename) {
 	return platform_load_image(filename);
 }
 
-void core_get_mouse(Mouse *mouse) {
-	platform_get_mouse(mouse);
-}
+void core_get_mouse(Mouse *mouse) { platform_get_mouse(mouse); }

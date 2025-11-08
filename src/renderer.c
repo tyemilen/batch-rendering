@@ -4,28 +4,27 @@
 #include <stdlib.h>
 
 #include "core.h"
+#include "log.h"
 #include "maler.h"
 #include "shader.h"
 #include "texture.h"
-
-GLuint uContainerOffsetLoc = 0;
-GLuint uWindowSizeLoc = 0;
-GLuint uTextureLoc = 0;
-GLuint uUseTextureLoc = 0;
-
 void renderer_draw_container(Renderer *r, MalerContainer *container) {
 	size_t element_count = maler_container_update(container);
 	if (element_count == 0) return;
 
-	if (!uContainerOffsetLoc) {
-		uContainerOffsetLoc =
+	if (!container->uContainerOffsetLoc) {
+		container->uContainerOffsetLoc =
 			glGetUniformLocation(container->shader, "uContainerOffset");
-		uWindowSizeLoc = glGetUniformLocation(container->shader, "uWindowSize");
-		uTextureLoc = glGetUniformLocation(container->shader, "uTexture");
-		uUseTextureLoc = glGetUniformLocation(container->shader, "uUseTexture");
+		container->uWindowSizeLoc =
+			glGetUniformLocation(container->shader, "uWindowSize");
+		container->uTextureLoc =
+			glGetUniformLocation(container->shader, "uTexture");
+		container->uUseTextureLoc =
+			glGetUniformLocation(container->shader, "uUseTexture");
 	}
+
 	glUseProgram(container->shader);
-	glUniform2f(uWindowSizeLoc, r->win_width, r->win_height);
+	glUniform2f(container->uWindowSizeLoc, r->win_width, r->win_height);
 	glBindVertexArray(container->vao);
 
 	size_t start = 0;
@@ -41,27 +40,26 @@ void renderer_draw_container(Renderer *r, MalerContainer *container) {
 		if (texture) {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, texture->data);
-			glUniform1i(uTextureLoc, 0);
-			glUniform1i(uUseTextureLoc, GL_TRUE);
+			glUniform1i(container->uTextureLoc, 0);
+			glUniform1i(container->uUseTextureLoc, GL_TRUE);
 		} else {
-			glUniform1i(uUseTextureLoc, GL_FALSE);
+			glUniform1i(container->uUseTextureLoc, GL_FALSE);
 		}
 		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, end - start);
 		start = end;
 	}
 }
 
-MalerContainer *renderer_add_container(Renderer *r, int id, int shader_type,
+MalerContainer *renderer_add_container(Renderer *r, int shader_type,
 									   int texture_id) {
 	r->containers = realloc(r->containers, (r->container_count + 1) *
 											   sizeof(MalerContainer *));
 	r->containers[r->container_count] = malloc(sizeof(MalerContainer));
 
 	MalerContainer *container = r->containers[r->container_count];
-	maler_container_init(container, id, shader_type);
+	maler_container_init(container, r->container_count, shader_type);
 
 	container->texture_id = texture_id;
-	container->id = r->container_count;
 
 	ShaderEntry shader = shader_get(r->shaders, shader_type);
 	container->shader = shader.prog;
@@ -70,6 +68,7 @@ MalerContainer *renderer_add_container(Renderer *r, int id, int shader_type,
 
 	shader.bind(container);
 
+	LOG_INFO("CONTAINER + 1");
 	return container;
 }
 
@@ -112,7 +111,7 @@ static int compare_containers(const void *a, const void *b) {
 }
 
 void renderer_flush(Renderer *r) {
-	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	if (r->container_count == 0) return;

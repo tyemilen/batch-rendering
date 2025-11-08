@@ -27,7 +27,8 @@ ShaderRegistry *shader_create_registry(size_t size) {
 	return registry;
 }
 
-void shader_register(ShaderRegistry *registry, int key, GLuint prog, void (*bind)(MalerContainer *)) {
+void shader_register(ShaderRegistry *registry, int key, GLuint prog,
+					 void (*bind)(MalerContainer *)) {
 	if (registry->count + 1 >= registry->size) {
 		ShaderEntry *old_entries = registry->entries;
 		size_t old_size = registry->size;
@@ -80,8 +81,7 @@ ShaderEntry shader_get(ShaderRegistry *registry, int key) {
 	uint32_t idx = hash((uint32_t)key) & (registry->size - 1);
 
 	while (registry->entries[idx].occupied) {
-		if (registry->entries[idx].key == key)
-			return registry->entries[idx];
+		if (registry->entries[idx].key == key) return registry->entries[idx];
 		idx = (idx + 1) & (registry->size - 1);
 	}
 

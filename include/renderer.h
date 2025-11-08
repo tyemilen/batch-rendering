@@ -14,7 +14,8 @@ typedef struct Renderer {
 } Renderer;
 
 void renderer_draw_container(Renderer *r, MalerContainer *container);
-MalerContainer *renderer_add_container(Renderer *r, int id, int shader_type,
+
+MalerContainer *renderer_add_container(Renderer *r, int shader_type,
 									   int texture_id);
 MalerContainer *renderer_get_container_by_texture(Renderer *r, int texture_id);
 MalerContainer *renderer_get_container_by_shader(Renderer *r, int type);

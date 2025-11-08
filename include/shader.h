@@ -9,7 +9,7 @@
 typedef struct ShaderEntry {
 	int key;
 	GLuint prog;
-	
+
 	void (*bind)(MalerContainer *);
 
 	int occupied;
@@ -22,7 +22,8 @@ typedef struct ShaderRegistry {
 } ShaderRegistry;
 
 ShaderRegistry *shader_create_registry(size_t size);
-void shader_register(ShaderRegistry *registry, int key, GLuint prog, void (*bind)(MalerContainer *));
+void shader_register(ShaderRegistry *registry, int key, GLuint prog,
+					 void (*bind)(MalerContainer *));
 ShaderEntry shader_get(ShaderRegistry *registry, int type);
 void shader_registry_destroy(ShaderRegistry *registry);
 int *shader_registry_get_keys(ShaderRegistry *registry, size_t *out_count);
