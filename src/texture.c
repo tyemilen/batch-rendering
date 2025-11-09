@@ -42,6 +42,12 @@ Texture *texture_create(int id, Image *img, GLenum own_format) {
 	return texture;
 }
 
+void texture_update(Texture *texture, Image *img) {
+	glBindTexture(GL_TEXTURE_2D, texture->data);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, texture->width, texture->height,
+					img->format, GL_UNSIGNED_BYTE, img->pixels);
+}
+
 Texture *texture_manager_add(TextureManager *mgr, int id, Image *img) {
 	if (mgr->count >= mgr->capacity) {
 		size_t new_cap = mgr->capacity ? mgr->capacity * 2 : 16;
@@ -62,3 +68,13 @@ Texture *texture_manager_get(TextureManager *mgr, int id) {
 	}
 	return NULL;
 }
+
+void texture_manager_update(TextureManager *mgr, int id, Image *img) {
+	Texture *texture = texture_manager_get(mgr, id);
+
+	if (!texture) return;
+
+	texture_update(texture, img);
+}
+
+

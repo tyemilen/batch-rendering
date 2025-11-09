@@ -20,8 +20,10 @@ typedef struct TextureManager {
 void texture_manager_init(TextureManager *manager);
 
 Texture *texture_create(int id, Image *img, GLenum own_format);
+void texture_update(Texture *texture, Image *img);
 
 Texture *texture_manager_add(TextureManager *mgr, int id, Image *img);
 Texture *texture_manager_get(TextureManager *mgr, int id);
+void texture_manager_update(TextureManager *mgr, int id, Image *img);
 
 #endif // TEXTURE_H_

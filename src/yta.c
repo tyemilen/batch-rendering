@@ -107,13 +107,29 @@ int yta_should_close(void) {
 	return exit;
 }
 
-void yta_destroy(MalerContainer *container, size_t index) {
+void yta_destroy_element(MalerContainer *container, size_t index) {
 	if (index >= container->element_count) return;
 	if (container->elements[index]->instance) {
 		free(container->elements[index]->instance);
 		container->elements[index]->instance = NULL;
 	}
 	free(container->elements[index]);
+}
+
+void yta_destroy(void) {
+	for (int i = 0; i < g_renderer.container_count; ++i) {
+		for (size_t j = 0; j < g_renderer.containers[i]->element_count; ++j) {
+			yta_destroy_element(g_renderer.containers[i], j);
+		}
+		g_renderer.containers[i]->elements = NULL;
+		g_renderer.containers[i]->element_count = 0;
+
+		free(g_renderer.containers[i]);
+		g_renderer.containers[i] = NULL;
+	}
+	free(g_renderer.containers);
+	g_renderer.containers = NULL;
+	g_renderer.container_count = 0;
 }
 
 double yta_get_time(void) {

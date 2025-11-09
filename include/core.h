@@ -91,6 +91,8 @@ extern void (*glTexImage2D)(GLenum, GLint, GLint, GLsizei, GLsizei, GLint,
 extern void (*glTexParameteri)(GLenum, GLenum, GLint);
 extern void (*glBufferData)(GLenum, GLsizeiptr, const void *, GLenum);
 extern void (*glViewport)(GLint, GLint, GLsizei, GLsizei);
+extern void (*glTexSubImage2D)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei,
+							   GLenum, GLenum, const void *);
 
 typedef void *(*GLProcLoader)(const char *name);
 

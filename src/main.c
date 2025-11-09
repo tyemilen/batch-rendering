@@ -1,3 +1,4 @@
+#include "texture.h"
 #include "yta.h"
 
 #include <math.h>
@@ -53,14 +54,15 @@ int main(void) {
 
 	TextObject fps = create_text("FPS: 0", 0, 0, 32, COLOR_BLACK, &atlas);
 
-	update_text(&fps, &atlas);
+	yta_load_texture(0, "cats.jpg");
 
 	while (!yta_should_close()) {
-		yta_clear(COLOR_WHITE);
 		float t = yta_get_time() * 2.0f;
-		float dt = yta_delta() * 10.0f;
+		float dt = yta_delta();
 
-		fps.text = strfmt("FPS: %.2f", 1.0 / (dt / 10.0f));
+		yta_clear(COLOR_WHITE);
+
+		fps.text = strfmt("FPS: %.f", 1.0 / dt);
 		fps.x = window.width - fps.width - 50;
 
 		text.x += text_vx;
@@ -76,12 +78,19 @@ int main(void) {
 			text.y = fmax(0, fmin(text.y, window.height - text.height));
 			text.text = "bar";
 		}
+		text.color.r = ((sinf(t * 5.0f) * 0.5f + 0.5f) * 255);
+		text.color.g =
+			((sinf((t * 2.0f) + 2.0f * M_PI / 3.0f) * 0.5f + 0.5f) * 255);
+		text.color.b =
+			((sinf((t * 6.0f) + 4.0f * M_PI / 3.0f) * 0.5f + 0.5f) * 255);
+
 
 		Mouse mouse = yta_get_mouse();
 		if (mouse.left_button.pressed) {
-			rect.x = lerp(rect.x, mouse.x, dt);
-			rect.y = lerp(rect.y, mouse.y, dt);
+			rect.x = lerp(rect.x, mouse.x, dt * 10.0f);
+			rect.y = lerp(rect.y, mouse.y, dt * 10.0f);
 
+			rect.texture = yta_get_texture(0);
 			text.text = "Cool text 2";
 		}
 
@@ -94,5 +103,6 @@ int main(void) {
 		update_text(&fps, &atlas);
 	}
 
+	yta_destroy();
 	return 0;
 }

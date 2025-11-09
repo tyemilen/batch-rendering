@@ -48,6 +48,8 @@ void (*glTexImage2D)(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum,
 void (*glTexParameteri)(GLenum, GLenum, GLint);
 void (*glBufferData)(GLenum, GLsizeiptr, const void *, GLenum);
 void (*glViewport)(GLint, GLint, GLsizei, GLsizei);
+void (*glTexSubImage2D)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum,
+						GLenum, const void *);
 
 void core_load_gl(GLProcLoader proc) {
 	glCreateShader = (GLuint (*)(GLenum))proc("glCreateShader");
@@ -96,6 +98,9 @@ void core_load_gl(GLProcLoader proc) {
 	glBufferData = (void (*)(GLenum, GLsizeiptr, const void *, GLenum))proc(
 		"glBufferData");
 	glViewport = (void (*)(GLint, GLint, GLsizei, GLsizei))proc("glViewport");
+	glTexSubImage2D =
+		(void (*)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum,
+				  const void *))proc("glTexSubImage2D");
 }
 
 void core_init_gl(Window window) {

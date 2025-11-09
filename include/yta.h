@@ -17,7 +17,8 @@ MalerElement *yta_create_ex(void *instance, int instance_size, int type,
 							Texture *texture, MalerContainer *container);
 MalerContainer *yta_create_container(int shader_type, int texture_id);
 
-void yta_destroy(MalerContainer *container, size_t index);
+void yta_destroy_element(MalerContainer *container, size_t index);
+void yta_destroy(void);
 
 Mouse yta_get_mouse(void);
 Texture *yta_load_texture(int id, const char *filename);

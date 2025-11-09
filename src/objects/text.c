@@ -160,7 +160,7 @@ void update_text(TextObject *obj, Atlas *atlas) {
 
 	if (len < tc->length) {
 		for (size_t i = len; i < tc->length; ++i) {
-			yta_destroy(tc->container, i);
+			yta_destroy_element(tc->container, i);
 		}
 		tc->container->element_count = len;
 		tc->container->elements =
