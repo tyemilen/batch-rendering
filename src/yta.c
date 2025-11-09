@@ -20,7 +20,7 @@ TextureManager g_texture_manager;
 void yta_init(char *title, int width, int height) {
 	window = core_create_window(title, width, height);
 	core_init_gl(window);
-	renderer_init(&g_renderer, 800, 600);
+	renderer_init(&g_renderer, width, height);
 	texture_manager_init(&g_texture_manager);
 
 	yta_register_shader(SHADER_RECT, shader_rect_get(), shader_rect_bind);
