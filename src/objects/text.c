@@ -1,6 +1,5 @@
 #include "objects/text.h"
 
-#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -27,8 +26,7 @@ TextContainer *create_text_container(Atlas *atlas, float color[4],
 	float cursor_y = start_y;
 
 	MalerContainer *container = yta_create_container(SHADER_TEXT, -1);
-	float total_width = 0;
-	float height = 0;
+	float min_y, max_y = 0.0f;
 
 	for (size_t i = 0; i < len; ++i) {
 		unsigned char c = text[i];
@@ -48,9 +46,6 @@ TextContainer *create_text_container(Atlas *atlas, float color[4],
 		instance->box[2] = (q.x1 - q.x0) * scale;
 		instance->box[3] = (q.y1 - q.y0) * scale;
 
-		total_width += instance->box[2];
-		height = fmax(height, instance->box[3]);
-
 		instance->color[0] = color[0];
 		instance->color[1] = color[1];
 		instance->color[2] = color[2];
@@ -65,13 +60,19 @@ TextContainer *create_text_container(Atlas *atlas, float color[4],
 					  atlas->texture, container);
 
 		cursor_x += atlas->chars[c].xadvance * scale;
+
+		float glyph_min_y = instance->box[1];
+		float glyph_max_y = instance->box[1] + instance->box[3];
+		if (glyph_min_y < min_y) min_y = glyph_min_y;
+		if (glyph_max_y > max_y) max_y = glyph_max_y;
 	}
+	float total_width = cursor_x - start_x;
 
 	TextContainer *result = malloc(sizeof(TextContainer));
 
 	result->container = container;
 	result->width = total_width;
-	result->height = height;
+	result->height = max_y - min_y - start_y;
 	result->length = len;
 
 	return result;
