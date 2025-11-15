@@ -7,7 +7,7 @@
 #include "font.h"
 #include "maler.h"
 
-#include "graphics/text.h"
+#include "objects/object.h"
 
 typedef struct TextContainer {
 	MalerContainer *container;
@@ -19,18 +19,20 @@ typedef struct TextContainer {
 } TextContainer;
 
 typedef struct TextObject {
+	ObjectBase base;
+
+	Atlas *atlas;
 	char *text;
 	float font_size;
 
 	float x, y, width, height;
 	Color color;
 
-	TextInstance *instance;
 	TextContainer *container;
 } TextObject;
 
-TextObject create_text(char *text, float start_x, float start_y,
-					   float font_size, Color color, Atlas *atlas);
-void update_text(TextObject *obj, Atlas *atlas);
+TextObject *yCreateText(char *text, float start_x, float start_y,
+						float font_size, Color color, Atlas *atlas);
+void yUpdateText(TextObject *obj);
 
 #endif // OBJECT_RECT_H_

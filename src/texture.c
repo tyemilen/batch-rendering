@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "core.h"
+#include "ygl.h"
 
 void texture_manager_init(TextureManager *mgr) {
 	mgr->textures = NULL;
@@ -76,5 +77,3 @@ void texture_manager_update(TextureManager *mgr, int id, Image *img) {
 
 	texture_update(texture, img);
 }
-
-

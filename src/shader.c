@@ -3,8 +3,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "core.h"
 #include "maler.h"
+#include "ygl.h"
 
 #ifdef DEBUG
 #include "log.h"

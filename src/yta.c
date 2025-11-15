@@ -1,58 +1,75 @@
 #include "yta.h"
 
-#include <pthread_time.h>
+#include <bits/time.h>
 #include <stdlib.h>
 #include <time.h>
 
 #include "core.h"
 #include "maler.h"
+#include "objects/object.h"
 #include "renderer.h"
 #include "shader.h"
 #include "texture.h"
+#include "ygl.h"
 
 #include "graphics/rect.h"
 #include "graphics/text.h"
 
-Window window = {0};
+Window g_window = {0};
 Renderer g_renderer;
 TextureManager g_texture_manager;
 
-void yta_init(char *title, int width, int height) {
-	window = core_create_window(title, width, height);
-	core_init_gl(window);
+static ObjectBase **g_objects = NULL;
+static size_t g_obj_count = 0;
+
+void YtaRegisterObject(ObjectBase *obj) {
+	g_objects = realloc(g_objects, sizeof(*g_objects) * (g_obj_count + 1));
+	g_objects[g_obj_count] = obj;
+	++g_obj_count;
+}
+
+void YtaUpdateObjects(void) {
+	for (size_t i = 0; i < g_obj_count; ++i) {
+		g_objects[i]->update(g_objects[i]);
+	}
+}
+
+Window YtaInit(char *title, int width, int height) {
+	g_window = core_create_window(title, width, height);
+	core_init_gl(g_window);
 	renderer_init(&g_renderer, width, height);
 	texture_manager_init(&g_texture_manager);
 
-	yta_register_shader(SHADER_RECT, shader_rect_get(), shader_rect_bind);
-	yta_register_shader(SHADER_TEXT, shader_text_get(), shader_text_bind);
+	YtaRegisterShader(SHADER_RECT, shader_rect_get(), shader_rect_bind);
+	YtaRegisterShader(SHADER_TEXT, shader_text_get(), shader_text_bind);
+
+	return g_window;
 }
 
-Mouse yta_get_mouse(void) {
-	core_get_mouse(&window.mouse);
-	return window.mouse;
+Mouse YtaGetMouse(void) {
+	core_get_mouse(&g_window.mouse);
+	return g_window.mouse;
 }
 
-Texture *yta_load_texture(int id, const char *filename) {
+Texture *YtaLoadTexture(int id, const char *filename) {
 	if (id < 0) return NULL;
 
 	Image *image = core_load_image(filename);
-
 	Texture *texture = texture_manager_add(&g_texture_manager, id, image);
-
 	free(image);
 	return texture;
 }
 
-Texture *yta_get_texture(int id) {
+Texture *YtaGetTexture(int id) {
 	return texture_manager_get(&g_texture_manager, id);
 }
 
-void yta_register_shader(int key, GLuint prog, void (*bind)(MalerContainer *)) {
+void YtaRegisterShader(int key, GLuint prog, void (*bind)(MalerContainer *)) {
 	shader_register(g_renderer.shaders, key, prog, bind);
 }
 
-MalerElement *yta_create(void *instance, int instance_size, int type,
-						 Texture *texture) {
+MalerElement *YtaCreate(void *instance, int instance_size, int type,
+						Texture *texture) {
 	MalerContainer *container =
 		texture ? renderer_get_container_by_texture(&g_renderer, texture->id)
 				: renderer_get_container_by_shader(&g_renderer, type);
@@ -65,31 +82,31 @@ MalerElement *yta_create(void *instance, int instance_size, int type,
 	return maler_create(instance, instance_size, type, texture, container);
 }
 
-MalerElement *yta_create_ex(void *instance, int instance_size, int type,
-							Texture *texture, MalerContainer *container) {
+MalerElement *YtaCreateEx(void *instance, int instance_size, int type,
+						  Texture *texture, MalerContainer *container) {
 	return maler_create(instance, instance_size, type, texture, container);
 }
 
-MalerContainer *yta_create_container(int shader_type, int texture_id) {
+MalerContainer *YtaCreateContainer(int shader_type, int texture_id) {
 	return renderer_add_container(&g_renderer, shader_type, texture_id);
 }
 
-MalerContainer *yta_get_container_by_shader(int shader_type) {
+MalerContainer *YtaGetContainerByShader(int shader_type) {
 	return renderer_get_container_by_shader(&g_renderer, shader_type);
 }
 
-MalerContainer *yta_get_container_by_texture(int texture_id) {
+MalerContainer *YtaGetContainerByTexture(int texture_id) {
 	return renderer_get_container_by_texture(&g_renderer, texture_id);
 }
 
-Window yta_get_window(void) { return window; }
+Window YtaGetWindow(void) { return g_window; }
 
-void yta_clear(Color color) {
-	glClearColor(color.r / 255, color.g / 255, color.b / 255, color.a);
+void YtaClear(Color color) {
+	glClearColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-int yta_should_close(void) {
+int YtaShouldClose(void) {
 	renderer_flush(&g_renderer);
 	Event event;
 	int exit = 0;
@@ -101,13 +118,13 @@ int yta_should_close(void) {
 			return exit;
 		}
 	}
-
+	YtaUpdateObjects();
 	core_draw();
 
 	return exit;
 }
 
-void yta_destroy_element(MalerContainer *container, size_t index) {
+void YtaDestroyElement(MalerContainer *container, size_t index) {
 	if (index >= container->element_count) return;
 	if (container->elements[index]->instance) {
 		free(container->elements[index]->instance);
@@ -116,10 +133,10 @@ void yta_destroy_element(MalerContainer *container, size_t index) {
 	free(container->elements[index]);
 }
 
-void yta_destroy(void) {
+void YtaDestroy(void) {
 	for (int i = 0; i < g_renderer.container_count; ++i) {
 		for (size_t j = 0; j < g_renderer.containers[i]->element_count; ++j) {
-			yta_destroy_element(g_renderer.containers[i], j);
+			YtaDestroyElement(g_renderer.containers[i], j);
 		}
 		g_renderer.containers[i]->elements = NULL;
 		g_renderer.containers[i]->element_count = 0;
@@ -132,15 +149,15 @@ void yta_destroy(void) {
 	g_renderer.container_count = 0;
 }
 
-double yta_get_time(void) {
+double YtaGetTime(void) {
 	struct timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
 	return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
 }
 
-float yta_delta(void) {
+float YtaDelta(void) {
 	static double prev_time = 0.0;
-	double cur_time = yta_get_time();
+	double cur_time = YtaGetTime();
 	float delta = (float)(cur_time - prev_time);
 	prev_time = cur_time;
 	return delta;

@@ -2,9 +2,9 @@
 
 #include <stddef.h>
 
-#include "core.h"
 #include "maler.h"
 #include "shader.h"
+#include "ygl.h"
 
 static const char *vertex_shader = R"glsl(
 #version 330

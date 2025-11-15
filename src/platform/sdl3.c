@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "core.h"
+#include "ygl.h"
 
 #ifdef DEBUG
 #include "log.h"

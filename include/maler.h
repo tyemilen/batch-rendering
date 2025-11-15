@@ -4,8 +4,8 @@
 #include <limits.h>
 #include <stddef.h>
 
-#include "core.h"
 #include "texture.h"
+#include "ygl.h"
 
 typedef struct MalerElement {
 	int type;

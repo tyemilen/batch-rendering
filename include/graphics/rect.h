@@ -1,8 +1,8 @@
 #ifndef GRAPHIC_RECT_H_
 #define GRAPHIC_RECT_H_
 
-#include "core.h"
 #include "maler.h"
+#include "ygl.h"
 
 #define SHADER_RECT 0x1
 

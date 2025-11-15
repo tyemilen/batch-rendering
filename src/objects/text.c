@@ -6,6 +6,7 @@
 #include "core.h"
 #include "font.h"
 #include "maler.h"
+#include "objects/object.h"
 #include "yta.h"
 
 #include "graphics/text.h"
@@ -25,7 +26,7 @@ TextContainer *create_text_container(Atlas *atlas, float color[4],
 	float cursor_x = start_x;
 	float cursor_y = start_y;
 
-	MalerContainer *container = yta_create_container(SHADER_TEXT, -1);
+	MalerContainer *container = YtaCreateContainer(SHADER_TEXT, -1);
 	float min_y, max_y = 0.0f;
 
 	for (size_t i = 0; i < len; ++i) {
@@ -56,8 +57,8 @@ TextContainer *create_text_container(Atlas *atlas, float color[4],
 		instance->uv[2] = q.s1;
 		instance->uv[3] = q.t1;
 
-		yta_create_ex(instance, sizeof(TextInstance), SHADER_TEXT,
-					  atlas->texture, container);
+		YtaCreateEx(instance, sizeof(TextInstance), SHADER_TEXT, atlas->texture,
+					container);
 
 		cursor_x += atlas->chars[c].xadvance * scale;
 
@@ -78,31 +79,38 @@ TextContainer *create_text_container(Atlas *atlas, float color[4],
 	return result;
 }
 
-TextObject create_text(char *text, float start_x, float start_y,
-					   float font_size, Color color, Atlas *atlas) {
-	TextObject obj = {0};
+TextObject *yCreateText(char *text, float start_x, float start_y,
+						float font_size, Color color, Atlas *atlas) {
+	TextObject *obj = malloc(sizeof(TextObject));
+	*obj = (TextObject){0};
+	obj->text = text;
 
-	obj.text = text;
+	obj->x = start_x;
+	obj->y = start_y;
+	obj->font_size = font_size;
 
-	obj.x = start_x;
-	obj.y = start_y;
-	obj.font_size = font_size;
-
-	obj.color = color;
+	obj->color = color;
 
 	TextContainer *container = create_text_container(
 		atlas, (float[4]){color.r / 255, color.g / 255, color.b / 255, color.a},
-		text, obj.x, obj.y, obj.font_size);
+		text, obj->x, obj->y, obj->font_size);
 
-	obj.width = container->width;	// short
-	obj.height = container->height; // cut
+	obj->width = container->width;	 // short
+	obj->height = container->height; // cut
 
-	obj.container = container;
+	obj->container = container;
+	obj->atlas = atlas;
+
+	obj->base.update = (obj_update_fn)yUpdateText;
+
+	YtaRegisterObject(&obj->base);
 
 	return obj;
 }
 
-void update_text(TextObject *obj, Atlas *atlas) {
+void yUpdateText(TextObject *obj) {
+	Atlas *atlas = obj->atlas;
+
 	size_t len = strlen(obj->text);
 	TextContainer *tc = obj->container;
 
@@ -134,8 +142,8 @@ void update_text(TextObject *obj, Atlas *atlas) {
 			instance = (TextInstance *)tc->container->elements[i]->instance;
 		} else {
 			instance = calloc(1, sizeof(TextInstance));
-			yta_create_ex(instance, sizeof(TextInstance), SHADER_TEXT,
-						  atlas->texture, tc->container);
+			YtaCreateEx(instance, sizeof(TextInstance), SHADER_TEXT,
+						atlas->texture, tc->container);
 			++tc->length;
 		}
 
@@ -161,7 +169,7 @@ void update_text(TextObject *obj, Atlas *atlas) {
 
 	if (len < tc->length) {
 		for (size_t i = len; i < tc->length; ++i) {
-			yta_destroy_element(tc->container, i);
+			YtaDestroyElement(tc->container, i);
 		}
 		tc->container->element_count = len;
 		tc->container->elements =

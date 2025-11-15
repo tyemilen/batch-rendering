@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "core.h"
 #include "texture.h"
+#include "ygl.h"
 
 const float quad_vertices[12] = {0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1};
 
@@ -42,7 +42,9 @@ void maler_container_init(MalerContainer *container, int id, int shader_type) {
 size_t maler_container_update(MalerContainer *container) {
 	size_t count = 0;
 	for (size_t i = 0; i < container->element_count; i++) {
-		if (container->elements[i]->type == container->shader_type && container->elements[i]->visible) count++;
+		if (container->elements[i]->type == container->shader_type &&
+			container->elements[i]->visible)
+			count++;
 	}
 
 	if (count == 0) return 0;

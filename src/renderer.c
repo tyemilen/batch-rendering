@@ -3,11 +3,11 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "core.h"
 #include "log.h"
 #include "maler.h"
 #include "shader.h"
 #include "texture.h"
+#include "ygl.h"
 
 void renderer_draw_container(Renderer *r, MalerContainer *container) {
 	size_t element_count = maler_container_update(container);

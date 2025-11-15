@@ -3,8 +3,8 @@
 
 #include <stddef.h>
 
-#include "core.h"
 #include "maler.h"
+#include "ygl.h"
 
 typedef struct ShaderEntry {
 	int key;

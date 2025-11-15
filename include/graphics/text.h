@@ -1,8 +1,8 @@
 #ifndef GRAPHICS_TEXT_H_
 #define GRAPHICS_TEXT_H_
 
-#include "core.h"
 #include "maler.h"
+#include "ygl.h"
 
 #define SHADER_TEXT 0x2
 

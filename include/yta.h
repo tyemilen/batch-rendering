@@ -7,6 +7,9 @@
 #include "maler.h"
 #include "texture.h"
 
+#include "objects/object.h"
+#include "ygl.h"
+
 #define COLOR_RED (Color){255, 0, 0, 1}
 #define COLOR_GREEN (Color){0, 255, 0, 1}
 #define COLOR_BLUE (Color){0, 0, 255, 1}
@@ -21,30 +24,23 @@
 #define COLOR_BLACK (Color){0, 0, 0, 1}
 #define COLOR_WHITE (Color){255, 255, 255, 1}
 
-void yta_init(char *title, int width, int height);
-
-void yta_register_shader(int key, GLuint prog, void (*bind)(MalerContainer *));
-
-MalerElement *yta_create(void *instance, int instance_size, int type,
-						 Texture *texture);
-MalerElement *yta_create_ex(void *instance, int instance_size, int type,
-							Texture *texture, MalerContainer *container);
-MalerContainer *yta_create_container(int shader_type, int texture_id);
-
-void yta_destroy_element(MalerContainer *container, size_t index);
-void yta_destroy(void);
-
-Mouse yta_get_mouse(void);
-Texture *yta_load_texture(int id, const char *filename);
-Texture *yta_get_texture(int id);
-
-Window yta_get_window(void);
-
-void yta_run(void);
-void yta_clear(Color color);
-int yta_should_close(void);
-
-double yta_get_time(void);
-float yta_delta(void);
-
+void YtaRegisterObject(ObjectBase *obj);
+Window YtaInit(char *title, int width, int height);
+void YtaRegisterShader(int key, GLuint prog, void (*bind)(MalerContainer *));
+MalerElement *YtaCreate(void *instance, int instance_size, int type,
+						Texture *texture);
+MalerElement *YtaCreateEx(void *instance, int instance_size, int type,
+						  Texture *texture, MalerContainer *container);
+MalerContainer *YtaCreateContainer(int shader_type, int texture_id);
+void YtaDestroyElement(MalerContainer *container, size_t index);
+void YtaDestroy(void);
+Mouse YtaGetMouse(void);
+Texture *YtaLoadTexture(int id, const char *filename);
+Texture *YtaGetTexture(int id);
+Window YtaGetWindow(void);
+void YtaRun(void);
+void YtaClear(Color color);
+int YtaShouldClose(void);
+double YtaGetTime(void);
+float YtaDelta(void);
 #endif // YTA_H_

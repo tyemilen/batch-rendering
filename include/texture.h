@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "core.h"
+#include "ygl.h"
 
 typedef struct Texture {
 	int id;

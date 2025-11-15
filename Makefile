@@ -2,7 +2,7 @@ CC = gcc
 AR = ar
 CFLAGS = -Wall -Wextra -Wpedantic -Wshadow -Wpointer-arith \
 		-Wcast-align -Wstrict-aliasing -Wformat=2 -Wundef \
-		-g -O0 -fstack-protector-strong -D_FORTIFY_SOURCE=2
+		-g -O1 -fstack-protector-strong -D_FORTIFY_SOURCE=2
 INCLUDE = -I./include
 OUTPUT = ./lib/libyta.a
 TARGET = libyta.a
@@ -17,7 +17,7 @@ CFLAGS += -DDEBUG
 endif
 
 ifeq ($(PLATFORM),win32)
-CFLAGS += -DPLATFORM_WINDOWS
+CFLAGS += -DPLATFORM_WINDOW
 PLATFORM_SOURCES = src/platform/win32.c
 LIBS += -lopengl32 -lGdi32
 endif
@@ -39,4 +39,4 @@ $(OUTPUT): $(OBJECTS)
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 clean:
-	rm -f $(OBJECTS) $(OUTPUT)
+	rm $(wildcard ./src/*.o) $(wildcard ./src/**/*.o) $(OUTPUT)
