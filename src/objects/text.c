@@ -154,10 +154,7 @@ void yUpdateText(TextObject *obj) {
 
 		total_width += instance->box[2];
 
-		instance->color[0] = obj->color.r / 255.0f;
-		instance->color[1] = obj->color.g / 255.0f;
-		instance->color[2] = obj->color.b / 255.0f;
-		instance->color[3] = obj->color.a;
+		MAP_COLOR(instance->color, obj->color);
 
 		instance->uv[0] = q.s0;
 		instance->uv[1] = q.t0;

@@ -5,6 +5,7 @@
 #include <time.h>
 
 #include "core.h"
+#include "graphics/grid.h"
 #include "maler.h"
 #include "objects/object.h"
 #include "renderer.h"
@@ -42,6 +43,7 @@ Window YtaInit(char *title, int width, int height) {
 
 	YtaRegisterShader(SHADER_RECT, shader_rect_get(), shader_rect_bind);
 	YtaRegisterShader(SHADER_TEXT, shader_text_get(), shader_text_bind);
+	YtaRegisterShader(SHADER_GRID, shader_grid_get(), shader_grid_bind);
 
 	return g_window;
 }

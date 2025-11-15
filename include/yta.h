@@ -22,6 +22,7 @@
 #define COLOR_BROWN (Color){165, 42, 42, 1}
 #define COLOR_GRAY (Color){128, 128, 128, 1}
 #define COLOR_BLACK (Color){0, 0, 0, 1}
+#define COLOR_NONE (Color){0, 0, 0, 0}
 #define COLOR_WHITE (Color){255, 255, 255, 1}
 
 void YtaRegisterObject(ObjectBase *obj);

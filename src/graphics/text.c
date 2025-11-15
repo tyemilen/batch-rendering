@@ -6,6 +6,8 @@
 #include "shader.h"
 #include "ygl.h"
 
+#include "graphics/helpers.h"
+
 static const char *vertex_shader = R"glsl(
 #version 330
 
@@ -46,26 +48,15 @@ void main() {
 }
 )glsl";
 
-GLuint shader_text_get(void) {
-	return shader_create(vertex_shader, fragment_shader);
-}
-
 void shader_text_bind(MalerContainer *container) {
 	glBindVertexArray(container->vao);
 	glBindBuffer(GL_ARRAY_BUFFER, container->instance_VBO);
 
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TextInstance),
-						  (void *)offsetof(TextInstance, box));
-	glVertexAttribDivisor(1, 1);
+	BIND_VEC4(1, box, TextInstance);
+	BIND_VEC4(2, uv, TextInstance);
+	BIND_VEC4(3, color, TextInstance);
+}
 
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(TextInstance),
-						  (void *)offsetof(TextInstance, uv));
-	glVertexAttribDivisor(2, 1);
-
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(TextInstance),
-						  (void *)offsetof(TextInstance, color));
-	glVertexAttribDivisor(3, 1);
+GLuint shader_text_get(void) {
+	return shader_create(vertex_shader, fragment_shader);
 }

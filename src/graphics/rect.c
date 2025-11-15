@@ -6,6 +6,8 @@
 #include "shader.h"
 #include "ygl.h"
 
+#include "graphics/helpers.h"
+
 static const char *vertex_shader = R"glsl(
 #version 330
 
@@ -63,15 +65,8 @@ void shader_rect_bind(MalerContainer *container) {
 	glBindVertexArray(container->vao);
 	glBindBuffer(GL_ARRAY_BUFFER, container->instance_VBO);
 
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(RectInstance),
-						  (void *)offsetof(RectInstance, box));
-	glVertexAttribDivisor(1, 1);
-
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(RectInstance),
-						  (void *)offsetof(RectInstance, color));
-	glVertexAttribDivisor(2, 1);
+	BIND_VEC4(1, box, RectInstance);
+	BIND_VEC4(2, color, RectInstance);
 }
 
 GLuint shader_rect_get(void) {

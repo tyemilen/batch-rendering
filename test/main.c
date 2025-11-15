@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,6 +7,7 @@
 #include "font.h"
 #include "fs.h"
 #include "log.h"
+#include "objects/grid.h"
 #include "texture.h"
 #include "yta.h"
 
@@ -32,9 +34,15 @@ __attribute__((format(printf, 1, 2))) char *strfmt(const char *fmt, ...) {
 }
 
 int main(void) {
-	Window window = YtaInit("char *title", 600, 800);
+	Window window = YtaInit("char *title", 1024, 768);
 	Atlas atlas =
 		font_create_atlas((unsigned char *)fs_read_file("font.ttf"), 64, 1024);
+
+	float cell_size = 8;
+	cell_size = fminf(window.width / floor(window.width / cell_size),
+					window.height / floor(window.height / cell_size));
+	yCreateGrid(0, 0, window.width, window.height, cell_size, (Color){0, 0, 0, .1}, COLOR_WHITE);
+
 	TextObject *fps = yCreateText("FPS: 0", 0, 0, 16, COLOR_GREEN, &atlas);
 
 	RectObject *rect = yCreateRect(20, 20, 30, 30, COLOR_PINK, 0);

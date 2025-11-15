@@ -26,8 +26,8 @@ RectObject *yCreateRect(float x, float y, float width, float height,
 
 	RectInstance *instance = malloc(sizeof(RectInstance));
 	*instance = (RectInstance){
-		{x, y, width, height},
-		{color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a}};
+		.box = {x, y, width, height},
+		.color = {color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a}};
 
 	obj->base.instance = instance;
 	obj->base.element =
@@ -47,10 +47,7 @@ void yUpdateRect(RectObject *obj) {
 	instance->box[2] = obj->width;
 	instance->box[3] = obj->height;
 
-	instance->color[0] = obj->color.r / 255;
-	instance->color[1] = obj->color.g / 255;
-	instance->color[2] = obj->color.b / 255;
-	instance->color[3] = obj->color.a;
+	MAP_COLOR(instance->color, obj->color);
 
 	obj->base.element->texture = obj->texture;
 	obj->base.element->visible = obj->visible;
