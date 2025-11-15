@@ -1,68 +1,57 @@
-#include "yta.h"
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
 
+#include "core.h"
+#include "font.h"
 #include "fs.h"
+#include "log.h"
+#include "texture.h"
+#include "yta.h"
 
 #include "objects/rect.h"
 #include "objects/text.h"
 
-typedef struct Button {
-	int x, y, width, height;
+float lerp(float a, float b, float t) { return a + (b - a) * t; }
 
-	RectObject rect;
-	TextObject text;
-} Button;
+__attribute__((format(printf, 1, 2))) char *strfmt(const char *fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	int size = vsnprintf(NULL, 0, fmt, args);
+	va_end(args);
 
-Button create_button(char *text, int x, int y, Atlas *atlas);
-void update_button(Button *, Atlas *atlas);
+	if (size < 0) return NULL;
+	char *buf = malloc(size + 1);
+	if (!buf) return NULL;
 
-int in(int x1, int y1, int x2, int y2, int width, int height) {
-	return x1 >= x2 && x1 <= x2 + width && y1 >= y2 && y1 <= y2 + height;
+	va_start(args, fmt);
+	vsnprintf(buf, size + 1, fmt, args);
+	va_end(args);
+
+	return buf;
 }
 
 int main(void) {
-	yta_init("char *title", 200, 300);
+	Window window = YtaInit("char *title", 600, 800);
 	Atlas atlas =
 		font_create_atlas((unsigned char *)fs_read_file("font.ttf"), 64, 1024);
+	TextObject *fps = yCreateText("FPS: 0", 0, 0, 16, COLOR_GREEN, &atlas);
 
-	Button btn = create_button("button", 0, 0, &atlas);
+	RectObject *rect = yCreateRect(20, 20, 30, 30, COLOR_PINK, 0);
+	yCreateRect(0, window.height - 30, window.width, 30, COLOR_MAGENTA, 0);
 
-	while (!yta_should_close()) {
-		yta_clear(COLOR_BLACK);
+	while (!YtaShouldClose()) {
+		YtaClear(COLOR_WHITE);
 
-		Mouse mouse = yta_get_mouse();
+		float dt = YtaDelta();
+		fps->text = strfmt("FPS: %.f", 1.0 / dt);
 
-		if (in(mouse.x, mouse.y, btn.x, btn.y, btn.width, btn.height) &&
-			mouse.left_button.pressed) {
-			btn.x += 10;
-		}
-		update_button(&btn, &atlas);
+		Mouse mouse = YtaGetMouse();
+
+		rect->x = lerp(rect->x, mouse.x, dt * 10.0f);
+		rect->y = lerp(rect->y, mouse.y, dt * 10.0f);
 	}
 
+	YtaDestroy();
 	return 0;
-}
-Button create_button(char *text, int x, int y, Atlas *atlas) {
-	Button button = {0};
-
-	button.x = x;
-	button.y = y;
-
-	button.rect = create_rect(x, y, 0, 0, COLOR_BLUE, 0);
-	button.text = create_text(text, x, y, 16, COLOR_MAGENTA, atlas);
-
-	button.rect.width = button.text.width;
-	button.rect.height = button.text.height;
-	update_rect(&button.rect);
-
-	button.width = button.rect.width;
-	button.height = button.rect.height;
-
-	return button;
-}
-
-void update_button(Button *button, Atlas *atlas) {
-	button->rect.x = button->x;
-	button->rect.y = button->y;
-	button->rect.width = button->width;
-	button->rect.height = button->height;
-	update_rect(&button->rect);
 }
