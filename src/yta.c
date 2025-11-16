@@ -158,9 +158,16 @@ double YtaGetTime(void) {
 }
 
 float YtaDelta(void) {
-	static double prev_time = 0.0;
+	static double prev_time = -1.0;
 	double cur_time = YtaGetTime();
-	float delta = (float)(cur_time - prev_time);
+	float delta;
+
+	if (prev_time < 0.0) {
+		delta = 0.016f;
+	} else {
+		delta = (float)(cur_time - prev_time);
+	}
+
 	prev_time = cur_time;
 	return delta;
 }
