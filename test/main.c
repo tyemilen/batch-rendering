@@ -1,3 +1,5 @@
+#define DEBUG 1
+
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -7,16 +9,20 @@
 #include "font.h"
 #include "fs.h"
 #include "log.h"
-#include "objects/grid.h"
 #include "texture.h"
 #include "yta.h"
 
+#include "objects/grid.h"
 #include "objects/rect.h"
 #include "objects/text.h"
 
 float lerp(float a, float b, float t) { return a + (b - a) * t; }
 
+#ifdef _WIN32
+char *strfmt(const char *fmt, ...) {
+#else
 __attribute__((format(printf, 1, 2))) char *strfmt(const char *fmt, ...) {
+#endif
 	va_list args;
 	va_start(args, fmt);
 	int size = vsnprintf(NULL, 0, fmt, args);
@@ -38,15 +44,14 @@ int main(void) {
 	Atlas atlas =
 		font_create_atlas((unsigned char *)fs_read_file("font.ttf"), 64, 1024);
 
-	float cell_size = 8;
-	cell_size = fminf(window.width / floor(window.width / cell_size),
-					window.height / floor(window.height / cell_size));
-	yCreateGrid(0, 0, window.width, window.height, cell_size, (Color){0, 0, 0, .1}, COLOR_WHITE);
+	yCreateGrid(0, 0, window.width, window.height, 8, (Color){0, 0, 0, .1}, COLOR_WHITE);
+
 
 	TextObject *fps = yCreateText("FPS: 0", 0, 0, 16, COLOR_GREEN, &atlas);
 
 	RectObject *rect = yCreateRect(20, 20, 30, 30, COLOR_PINK, 0);
 	yCreateRect(0, window.height - 30, window.width, 30, COLOR_MAGENTA, 0);
+	
 
 	while (!YtaShouldClose()) {
 		YtaClear(COLOR_WHITE);

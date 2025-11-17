@@ -3,10 +3,11 @@
 #include <stdlib.h>
 
 #include "core.h"
-#include "objects/object.h"
 #include "texture.h"
 #include "yta.h"
+#include "log.h"
 
+#include "objects/object.h"
 #include "graphics/rect.h"
 
 RectObject *yCreateRect(float x, float y, float width, float height,

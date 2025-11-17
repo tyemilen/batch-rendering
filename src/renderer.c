@@ -58,6 +58,8 @@ MalerContainer *renderer_add_container(Renderer *r, int shader_type,
 	r->containers[r->container_count] = malloc(sizeof(MalerContainer));
 
 	MalerContainer *container = r->containers[r->container_count];
+	memset(container, 0, sizeof(MalerContainer));
+
 	maler_container_init(container, r->container_count, shader_type);
 
 	container->texture_id = texture_id;
@@ -69,7 +71,6 @@ MalerContainer *renderer_add_container(Renderer *r, int shader_type,
 
 	shader.bind(container);
 
-	LOG_INFO("CONTAINER + 1");
 	return container;
 }
 

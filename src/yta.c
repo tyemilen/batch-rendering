@@ -1,11 +1,16 @@
 #include "yta.h"
 
-#include <bits/time.h>
 #include <stdlib.h>
+
+#ifdef PLATFORM_WIN32
+#include <windows.h>
+#else
 #include <time.h>
+#endif
 
 #include "core.h"
 #include "graphics/grid.h"
+#include "log.h"
 #include "maler.h"
 #include "objects/object.h"
 #include "renderer.h"
@@ -40,11 +45,13 @@ Window YtaInit(char *title, int width, int height) {
 	core_init_gl(g_window);
 	renderer_init(&g_renderer, width, height);
 	texture_manager_init(&g_texture_manager);
+	LOG_INFO("done with basics");
 
 	YtaRegisterShader(SHADER_RECT, shader_rect_get(), shader_rect_bind);
 	YtaRegisterShader(SHADER_TEXT, shader_text_get(), shader_text_bind);
 	YtaRegisterShader(SHADER_GRID, shader_grid_get(), shader_grid_bind);
 
+	LOG_INFO("done with shaders");
 	return g_window;
 }
 
@@ -75,7 +82,6 @@ MalerElement *YtaCreate(void *instance, int instance_size, int type,
 	MalerContainer *container =
 		texture ? renderer_get_container_by_texture(&g_renderer, texture->id)
 				: renderer_get_container_by_shader(&g_renderer, type);
-
 	if (!container) {
 		container = renderer_add_container(&g_renderer, type,
 										   texture ? texture->id : 0);
@@ -152,9 +158,23 @@ void YtaDestroy(void) {
 }
 
 double YtaGetTime(void) {
+#ifdef PLATFORM_WIN32
+	static LARGE_INTEGER freq;
+	static int initialized = 0;
+	if (!initialized) {
+		QueryPerformanceFrequency(&freq);
+		initialized = 1;
+	}
+
+	LARGE_INTEGER counter;
+	QueryPerformanceCounter(&counter);
+	return (double)counter.QuadPart / (double)freq.QuadPart;
+
+#else
 	struct timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
-	return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
+	return (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9;
+#endif
 }
 
 float YtaDelta(void) {

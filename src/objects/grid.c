@@ -4,6 +4,7 @@
 
 #include "core.h"
 #include "yta.h"
+#include "log.h"
 
 #include "graphics/grid.h"
 #include "objects/object.h"

@@ -1,5 +1,6 @@
 #include "core.h"
 #include "ygl.h"
+#include "log.h"
 
 #ifdef PLATFORM_SDL3
 #include "platform/sdl3.h"
@@ -10,9 +11,11 @@
 
 void core_init_gl(Window window) {
 	ygl_init((GLProcLoader)platform_gl_proc);
+
 	glViewport(0, 0, window.width, window.height);
-	glClearColor(0.0, 0.0, 1.0, 1.0);
+	glClearColor(0.0, 1.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
+	LOG_INFO("Done with GL");
 }
 
 Window core_create_window(char *title, int width, int height) {
@@ -20,8 +23,8 @@ Window core_create_window(char *title, int width, int height) {
 	window.mouse = (Mouse){0};
 
 	platform_init(&window);
-
 	core_get_mouse(&window.mouse);
+
 	return window;
 }
 

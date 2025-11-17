@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "log.h"
 #include "texture.h"
 #include "ygl.h"
 
@@ -24,9 +25,7 @@ void maler_container_init(MalerContainer *container, int id, int shader_type) {
 	glGenVertexArrays(1, &container->vao);
 	glGenBuffers(1, &container->quad_VBO);
 	glGenBuffers(1, &container->instance_VBO);
-
 	glBindVertexArray(container->vao);
-
 	glBindBuffer(GL_ARRAY_BUFFER, container->quad_VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quad_vertices), quad_vertices,
 				 GL_STATIC_DRAW);
@@ -35,7 +34,6 @@ void maler_container_init(MalerContainer *container, int id, int shader_type) {
 						  (void *)0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, container->instance_VBO);
-
 	glBindVertexArray(0);
 }
 

@@ -14,9 +14,7 @@
 #include "core.h"
 #include "ygl.h"
 
-#ifdef DEBUG
 #include "log.h"
-#endif
 
 typedef struct {
 	SDL_Window *window;
@@ -115,9 +113,6 @@ void platform_get_mouse(Mouse *mouse) {
 
 void *platform_gl_proc(const char *name) {
 	void *proc = (void *)SDL_GL_GetProcAddress(name);
-#ifdef DEBUG
 	LOG_INFO("GL proc: %s => %p", name, proc);
-#endif
-
 	return proc;
 }
