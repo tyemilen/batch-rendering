@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char *fs_read_file(char *path) {
+YFile *fs_read_file(char *path) {
 	FILE *file = fopen(path, "rb");
 	if (!file) return NULL;
 
@@ -20,7 +20,7 @@ char *fs_read_file(char *path) {
 
 	rewind(file);
 
-	char *buffer = (char *)malloc(file_size + 1);
+	unsigned char *buffer = (unsigned char *)malloc(file_size + 1);
 	if (!buffer) {
 		fclose(file);
 		return NULL;
@@ -35,5 +35,11 @@ char *fs_read_file(char *path) {
 
 	buffer[bytes_read] = '\0';
 	fclose(file);
-	return buffer;
+
+	YFile *yfile = malloc(sizeof(YFile));
+
+	yfile->data = buffer;
+	yfile->size = bytes_read;
+
+	return yfile;
 }

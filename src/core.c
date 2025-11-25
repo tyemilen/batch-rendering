@@ -35,6 +35,10 @@ int core_poll_event(Event *event) {
 	return event->type;
 }
 
+int core_get_key(int k) {
+	return platform_get_key(k);
+}
+
 Image *core_load_image(const char *filename) {
 	return platform_load_image(filename);
 }

@@ -41,28 +41,39 @@ __attribute__((format(printf, 1, 2))) char *strfmt(const char *fmt, ...) {
 
 int main(void) {
 	Window window = YtaInit("char *title", 1024, 768);
+	YFile *font_file = fs_read_file("font.ttf");
+
+	Texture *frog_png = YtaLoadTexture(1, "./cat.png");
+
 	Atlas atlas =
-		font_create_atlas((unsigned char *)fs_read_file("font.ttf"), 64, 1024);
+		font_create_atlas(font_file->data, 64, 1024);
 
-	yCreateGrid(0, 0, window.width, window.height, 8, (Color){0, 0, 0, .1}, COLOR_WHITE);
+	yCreateGrid(0, 0, window.width, window.height, 8, (Color){0, 0, 0, .05}, COLOR_WHITE);
+	yCreateRect(60, 120, frog_png->width, frog_png->height, COLOR_PINK, frog_png);
 
-
-	TextObject *fps = yCreateText("FPS: 0", 0, 0, 16, COLOR_GREEN, &atlas);
-
+	TextObject *fps = yCreateText("FPS: 0", 0, 0, 16, COLOR_RED, &atlas);
+	TextObject *pos = yCreateText("pos: x, y", 0, 20, 16, COLOR_RED, &atlas);
 	RectObject *rect = yCreateRect(20, 20, 30, 30, COLOR_PINK, 0);
+
 	yCreateRect(0, window.height - 30, window.width, 30, COLOR_MAGENTA, 0);
 	
-
+	LOG_INFO("%d, %d", window.width, window.height);
 	while (!YtaShouldClose()) {
 		YtaClear(COLOR_WHITE);
 
 		float dt = YtaDelta();
 		fps->text = strfmt("FPS: %.f", 1.0 / dt);
 
+		pos->text = strfmt("pos: %f, %f", rect->x, rect->y);
 		Mouse mouse = YtaGetMouse();
 
-		rect->x = lerp(rect->x, mouse.x, dt * 10.0f);
-		rect->y = lerp(rect->y, mouse.y, dt * 10.0f);
+		if (YtaGetKeyState(KEY_1)) {
+			LOG_INFO("1");
+		}
+		if (!mouse.left_button.pressed) {
+			rect->x = lerp(rect->x, mouse.x, dt * 10.0f);
+			rect->y = lerp(rect->y, mouse.y, dt * 10.0f);
+		}
 	}
 
 	YtaDestroy();

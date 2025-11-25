@@ -6,6 +6,8 @@
 int platform_init(Window *window);
 void platform_draw(void);
 
+int platform_get_key(int k);
+
 void platform_poll_event(Event *);
 Image *platform_load_image(const char *filename);
 

@@ -3,6 +3,11 @@
 
 #include <stddef.h>
 
-char *fs_read_file(char *path);
+struct YFile {
+	unsigned char *data;
+	size_t size;
+} typedef YFile;
+
+YFile *fs_read_file(char *path);
 
 #endif // FS_H_

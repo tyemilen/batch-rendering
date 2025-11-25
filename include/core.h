@@ -44,7 +44,7 @@ typedef struct Event {
 } Event;
 
 int core_poll_event(Event *);
-
+int core_get_key(int k);
 typedef struct Image {
 	int width, height;
 

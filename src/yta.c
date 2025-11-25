@@ -157,6 +157,10 @@ void YtaDestroy(void) {
 	g_renderer.container_count = 0;
 }
 
+int YtaGetKeyState(KeyboardKey key) {
+	return core_get_key(key);
+}
+
 double YtaGetTime(void) {
 #ifdef PLATFORM_WIN32
 	static LARGE_INTEGER freq;
