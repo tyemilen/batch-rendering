@@ -368,7 +368,7 @@ void handle_key(WPARAM wparam, int state) {
 	platform.keys_state[key] = state;
 }
 
-int platform_get_key(KeyboardKey k) {
+int platform_get_key(int k) {
 	return platform.keys_state[k];
 }
 

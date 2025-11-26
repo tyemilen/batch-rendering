@@ -25,7 +25,7 @@ void(YGL_APIENTRY *glVertexAttribPointer)(GLuint, GLint, GLenum, GLboolean,
 										  GLsizei, const void *);
 GLint(YGL_APIENTRY *glGetUniformLocation)(GLuint, const char *);
 void(YGL_APIENTRY *glUniform1i)(GLint, GLint);
-void(APIENTRY *glUniform2f)(GLint, float, float);
+void(YGL_APIENTRY *glUniform2f)(GLint, float, float);
 void(YGL_APIENTRY *glActiveTexture)(GLenum);
 void(YGL_APIENTRY *glBindTexture)(GLenum, GLuint);
 void(YGL_APIENTRY *glDrawArraysInstanced)(GLenum, GLint, GLsizei, GLsizei);
