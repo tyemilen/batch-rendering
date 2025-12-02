@@ -6,7 +6,7 @@
 #include "ygl.h"
 
 void texture_manager_init(TextureManager *mgr) {
-	mgr->textures = NULL;
+	mgr->textures = 0;
 	mgr->count = 0;
 	mgr->capacity = 0;
 }
@@ -67,7 +67,7 @@ Texture *texture_manager_get(TextureManager *mgr, int id) {
 	for (size_t i = 0; i < mgr->count; i++) {
 		if (mgr->textures[i]->id == id) return mgr->textures[i];
 	}
-	return NULL;
+	return 0;
 }
 
 void texture_manager_update(TextureManager *mgr, int id, Image *img) {

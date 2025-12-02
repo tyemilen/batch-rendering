@@ -9,23 +9,26 @@
 #endif
 
 #include "core.h"
-#include "graphics/grid.h"
 #include "log.h"
 #include "maler.h"
-#include "objects/object.h"
 #include "renderer.h"
 #include "shader.h"
 #include "texture.h"
 #include "ygl.h"
 
+#include "objects/object.h"
+
+#include "graphics/grid.h"
 #include "graphics/rect.h"
 #include "graphics/text.h"
+#include "graphics/texture.h"
+
 
 Window g_window = {0};
 Renderer g_renderer;
 TextureManager g_texture_manager;
 
-static ObjectBase **g_objects = NULL;
+static ObjectBase **g_objects = 0;
 static size_t g_obj_count = 0;
 
 void YtaRegisterObject(ObjectBase *obj) {
@@ -50,6 +53,8 @@ Window YtaInit(char *title, int width, int height) {
 	YtaRegisterShader(SHADER_RECT, shader_rect_get(), shader_rect_bind);
 	YtaRegisterShader(SHADER_TEXT, shader_text_get(), shader_text_bind);
 	YtaRegisterShader(SHADER_GRID, shader_grid_get(), shader_grid_bind);
+	YtaRegisterShader(SHADER_TEXTURE, shader_texture_get(),
+					  shader_texture_bind);
 
 	LOG_INFO("done with shaders");
 	return g_window;
@@ -61,7 +66,7 @@ Mouse YtaGetMouse(void) {
 }
 
 Texture *YtaLoadTexture(int id, const char *filename) {
-	if (id < 0) return NULL;
+	if (id < 0) return 0;
 
 	Image *image = core_load_image(filename);
 	Texture *texture = texture_manager_add(&g_texture_manager, id, image);
@@ -136,7 +141,7 @@ void YtaDestroyElement(MalerContainer *container, size_t index) {
 	if (index >= container->element_count) return;
 	if (container->elements[index]->instance) {
 		free(container->elements[index]->instance);
-		container->elements[index]->instance = NULL;
+		container->elements[index]->instance = 0;
 	}
 	free(container->elements[index]);
 }
@@ -146,20 +151,18 @@ void YtaDestroy(void) {
 		for (size_t j = 0; j < g_renderer.containers[i]->element_count; ++j) {
 			YtaDestroyElement(g_renderer.containers[i], j);
 		}
-		g_renderer.containers[i]->elements = NULL;
+		g_renderer.containers[i]->elements = 0;
 		g_renderer.containers[i]->element_count = 0;
 
 		free(g_renderer.containers[i]);
-		g_renderer.containers[i] = NULL;
+		g_renderer.containers[i] = 0;
 	}
 	free(g_renderer.containers);
-	g_renderer.containers = NULL;
+	g_renderer.containers = 0;
 	g_renderer.container_count = 0;
 }
 
-int YtaGetKeyState(KeyboardKey key) {
-	return core_get_key(key);
-}
+int YtaGetKeyState(KeyboardKey key) { return core_get_key(key); }
 
 double YtaGetTime(void) {
 #ifdef PLATFORM_WIN32

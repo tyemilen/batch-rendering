@@ -1,7 +1,5 @@
 #include "graphics/rect.h"
 
-#include <stddef.h>
-
 #include "maler.h"
 #include "shader.h"
 #include "ygl.h"

@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "log.h"
 #include "texture.h"
 #include "ygl.h"
 
@@ -12,7 +11,7 @@ const float quad_vertices[12] = {0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1};
 
 void maler_container_init(MalerContainer *container, int id, int shader_type) {
 	container->id = id;
-	container->elements = NULL;
+	container->elements = 0;
 	container->element_count = 0;
 	container->shader_type = shader_type;
 	container->shader_bound = 0;

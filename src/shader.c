@@ -63,7 +63,7 @@ void shader_register(ShaderRegistry *registry, int key, GLuint prog,
 
 int *shader_registry_get_keys(ShaderRegistry *registry, size_t *out_count) {
 	*out_count = registry->count;
-	if (registry->count == 0) return NULL;
+	if (registry->count == 0) return 0;
 
 	int *keys = malloc(registry->count * sizeof(int));
 	size_t idx = 0;
@@ -128,7 +128,7 @@ GLuint shader_create(const char *vert_src, const char *frag_src) {
 	if (!success) {
 #ifdef DEBUG
 		char log[1024];
-		glGetProgramInfoLog(program, sizeof(log), NULL, log);
+		glGetProgramInfoLog(program, sizeof(log), 0, log);
 		LOG_ERROR("shader_create(): %s\n", log);
 #endif
 

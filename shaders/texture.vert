@@ -3,13 +3,16 @@
 layout(location = 0) in vec2 aVertex;
 layout(location = 1) in vec4 aBox;
 layout(location = 2) in vec4 aColor;
+layout(location = 3) in vec4 aUV;
 
 uniform vec2 uWindowSize;
 
 out vec2 vLocalPos;
 out vec4 vColor;
 out float vRadius;
+
 flat out vec2 vSize;
+out vec2 vTexCoord;
 
 void main() {
 	vec2 pos = aBox.xy + aVertex * aBox.zw;
@@ -20,4 +23,5 @@ void main() {
 	vLocalPos = aVertex * aBox.zw - 0.5 * aBox.zw;
 	vColor = aColor;
 	vSize = aBox.zw;
+	vTexCoord = mix(aUV.xy, aUV.zw, aVertex);
 }

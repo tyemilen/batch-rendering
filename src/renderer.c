@@ -33,7 +33,6 @@ void renderer_draw_container(Renderer *r, MalerContainer *container) {
 	while (start < element_count) {
 		MalerElement *first = container->elements[start];
 		Texture *texture = first->texture;
-
 		size_t end = start + 1;
 		while (end < element_count &&
 			   container->elements[end]->texture == texture)
@@ -94,7 +93,7 @@ MalerContainer *renderer_get_container_by_shader(Renderer *r, int type) {
 }
 
 void renderer_init(Renderer *r, int w, int h) {
-	r->containers = NULL;
+	r->containers = 0;
 	r->container_count = 0;
 	r->shaders = shader_create_registry(64);
 

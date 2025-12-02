@@ -2,6 +2,7 @@
 
 #include "core.h"
 #include "texture.h"
+#include "ygl.h"
 
 #include <stdlib.h>
 
@@ -42,7 +43,7 @@ Atlas font_create_atlas(unsigned char *font_data, int font_size,
 		height = (min_height + max_height) / 2;
 
 		stbtt_pack_context ctx;
-		if (!stbtt_PackBegin(&ctx, pixels, atlas_width, height, 0, 1, NULL))
+		if (!stbtt_PackBegin(&ctx, pixels, atlas_width, height, 0, 1, 0))
 			break;
 
 		int ok = stbtt_PackFontRange(&ctx, font_data, 0, (float)font_size, 0,

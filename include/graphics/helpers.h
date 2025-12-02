@@ -11,6 +11,6 @@
 #define BIND_VEC3(index, field, STRUCT) BIND_ATTRIB_F(index, 3, field, STRUCT)
 #define BIND_VEC4(index, field, STRUCT) BIND_ATTRIB_F(index, 4, field, STRUCT)
 
-#define __include_shader(path) _shader_included_##path
+#define __include_shader(path) "included_shader_" #path
 
 #endif // GRAPHICS_HELPERS_H_

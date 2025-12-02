@@ -2,7 +2,7 @@
 
 in vec2 vLocalPos;
 in vec4 vColor;
-in vec2 vSize;
+flat in vec2 vSize;
 
 out vec4 FragColor;
 

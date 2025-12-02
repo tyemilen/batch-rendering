@@ -4,9 +4,10 @@
 
 #include "core.h"
 #include "fs.h"
-#include "yta.h"
-#include "ygl.h"
 #include "log.h"
+#include "ygl.h"
+#include "yta.h"
+
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -115,16 +116,16 @@ int platform_init(Window *window) {
 }
 
 Image *platform_load_image(const char *filename) {
-	if (!filename) return NULL;
+	if (!filename) return 0;
 
 	YFile *file = fs_read_file((char *)filename);
-	if (!file) return NULL;
+	if (!file) return 0;
 
 	Image *image = malloc(sizeof(Image));
 	if (!image) {
 		free(file->data);
 		free(file);
-		return NULL;
+		return 0;
 	}
 
 	int temp_chs = 0;
@@ -136,7 +137,7 @@ Image *platform_load_image(const char *filename) {
 
 	if (!image->pixels) {
 		free(image);
-		return NULL;
+		return 0;
 	}
 
 	image->format = GL_RGBA;
@@ -368,9 +369,7 @@ void handle_key(WPARAM wparam, int state) {
 	platform.keys_state[key] = state;
 }
 
-int platform_get_key(int k) {
-	return platform.keys_state[k];
-}
+int platform_get_key(int k) { return platform.keys_state[k]; }
 
 void platform_poll_event(Event *event) {
 	MSG msg;
